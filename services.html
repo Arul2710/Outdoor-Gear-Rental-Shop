@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>TrailGear | Services & Guides – Outdoor Gear Rental</title>
+    <link rel="icon" type="image/png" href="img/fav icons.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; width: 100%; min-height: 100vh; transition: background-color 0.3s ease, color 0.3s ease; }
+
+        .dropdown-content { display: none; opacity: 0; transform: translateY(10px); transition: opacity 0.2s ease, transform 0.2s ease; z-index: 1000; }
+        .dropdown-content.show { display: block; opacity: 1; transform: translateY(0); }
+
+        #mobileMenu { transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); box-shadow: -10px 0 30px rgba(0,0,0,0.1); z-index: 1100; transform: translateX(100%); }
+        #mobileMenu.open { transform: translateX(0); }
+        .dark #mobileMenu { box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
+
+        .nav-link { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 16px; border-radius: 8px; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px; color: black; white-space: nowrap; text-decoration: none; }
+        .dark .nav-link { color: #cbd5e1; }
+        .nav-link:hover { background-color: #ff8000; color: white !important; }
+        .nav-link.active { background-color: #ff8000; color: white !important; }
+
+        .mobile-nav-link { font-size: 14px; font-weight: 600; padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; color: #1e293b; background: transparent; transition: all 0.3s ease; width: 100%; text-transform: uppercase; letter-spacing: 0.05em; border: none; cursor: pointer; text-decoration: none; }
+        .dark .mobile-nav-link { color: #e2e8f0; }
+        .mobile-nav-link:hover { background-color: #ff8000 !important; color: white !important; }
+        .mobile-nav-link.active { background-color: #ff8000 !important; color: white !important; }
+
+        .mobile-submenu { display: none; flex-direction: column; padding-left: 1rem; margin-left: 0.5rem; border-left: 2px solid rgba(255, 128, 0,0.3); }
+        .mobile-submenu.open { display: flex; }
+        .mobile-submenu a { padding: 12px 16px; margin: 2px 0; border-radius: 8px; transition: all 0.2s ease; color: #1e293b; font-size: 14px; font-weight: 500; text-decoration: none; }
+        .dark .mobile-submenu a { color: #e2e8f0; }
+        .mobile-submenu .active-link { background-color: #ff8000 !important; color: white !important; }
+        .mobile-submenu a:hover { background-color: #ff8000 !important; color: white !important; }
+
+        button, a { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        @media (max-width: 640px) { button, a { min-height: 44px; } }
+        @media (max-width: 1279px) { .lg\:flex { display: none !important; } .xl\:flex { display: none !important; } .xl\:block { display: none !important; } .xl\:hidden { display: block !important; } }
+        @media (min-width: 1280px) { .xl\:flex { display: flex !important; } .xl\:block { display: block !important; } .xl\:hidden { display: none !important; } }
+        section, footer, div, nav, button, a, p, h1, h2, h3, h4, span { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+
+        /* Service card hover */
+        .svc-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(255, 128, 0,0.12); }
+        .svc-card { transition: all 0.4s cubic-bezier(0.4,0,0.2,1); }
+        .svc-card:hover .svc-icon { background-color: #ff8000; }
+        .svc-icon { transition: background-color 0.3s ease; }
+        .svc-icon svg { transition: color 0.3s ease, stroke 0.3s ease; }
+        .svc-card:hover .svc-icon svg { color: white !important; stroke: white !important; }
+
+        /* Gear category card */
+        .cat-card { transition: all 0.5s cubic-bezier(0.4,0,0.2,1); }
+        .cat-card:hover { transform: translateY(-6px); box-shadow: 0 25px 50px rgba(255, 128, 0,0.15); border-color: rgba(255, 128, 0,0.3) !important; }
+        .cat-card:hover img { transform: scale(1.1); }
+        .cat-card img { transition: transform 0.5s ease; }
+        .cat-card:hover .cat-icon { background-color: #ff8000; }
+        .cat-icon { transition: background-color 0.5s ease; }
+        .cat-icon svg { transition: color 0.5s ease; }
+        .cat-card:hover .cat-icon svg { color: white !important; stroke: white !important; }
+
+        /* Guide card */
+        .guide-card { transition: all 0.3s ease; }
+        .guide-card:hover { transform: translateY(-5px); }
+        .guide-card:hover img { transform: scale(1.06); }
+        .guide-card img { transition: transform 0.5s ease; }
+
+        /* Hero parallax text */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .hero-text { animation: fadeUp 0.8s ease forwards; }
+        .hero-text-delay { animation: fadeUp 0.8s ease 0.2s forwards; opacity: 0; }
+        .hero-text-delay2 { animation: fadeUp 0.8s ease 0.4s forwards; opacity: 0; }
+    </style>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { primary: '#ff8000', darkBg: '#0f172a' } } }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-darkBg text-slate-900 dark:text-white overflow-x-hidden transition-colors duration-300">
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="fixed w-full z-[100] px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4">
+    <div class="max-w-[1400px] mx-auto flex items-center justify-between bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl px-4 sm:px-5 py-2 sm:py-3 rounded-xl sm:rounded-2xl border border-white/20 shadow-lg transition-all duration-300">
+
+        <div class="flex items-center gap-1 sm:gap-2">
+            <span class="text-xl sm:text-2xl md:text-3xl font-black tracking-tighter flex items-center gap-1 sm:gap-2 text-primary">
+                <i data-lucide="tent" class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"></i>
+                Trail<span class="text-black dark:text-white">Gear</span>
+            </span>
+        </div>
+
+        <div class="hidden lg:flex items-center gap-1 xl:gap-2">
+            <div class="relative">
+                <button onclick="toggleDropdown('homeMenu', event)" class="nav-link">
+                    Home <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                </button>
+                <div id="homeMenu" class="dropdown-content absolute top-full mt-2 w-40 bg-white dark:bg-slate-800 shadow-xl rounded-lg border border-slate-100 dark:border-slate-700 overflow-hidden">
+                    <a href="index.html" class="block px-4 py-2.5 text-xs font-bold hover:bg-orange-600 hover:text-white transition dark:text-white">Home 1</a>
+                    <a href="home2.html" class="block px-4 py-2.5 text-xs font-bold hover:bg-orange-600 hover:text-white transition dark:text-white">Home 2</a>
+                </div>
+            </div>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="book.html" class="nav-link">Rent Gear</a>
+            <a href="Services.html" class="nav-link active">Services</a>
+            <a href="Gallery.html" class="nav-link">Gear &amp; Guides</a>
+            <a href="Contact.html" class="nav-link">Contact</a>
+            <div class="relative">
+                <button onclick="toggleDropdown('dashMenu', event)" class="nav-link">
+                    Dashboard <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                </button>
+                <div id="dashMenu" class="dropdown-content absolute top-full mt-2 w-44 bg-white dark:bg-slate-800 shadow-xl rounded-lg border border-slate-100 dark:border-slate-700 overflow-hidden">
+                    <a href="admin.html" class="flex items-center gap-2 px-4 py-2.5 text-xs font-bold hover:bg-orange-600 hover:text-white transition dark:text-white"><i data-lucide="user-cog" class="w-3.5 h-3.5"></i> Admin Dashboard</a>
+                    <a href="user.html" class="flex items-center gap-2 px-4 py-2.5 text-xs font-bold hover:bg-orange-600 hover:text-white transition dark:text-white"><i data-lucide="user" class="w-3.5 h-3.5"></i> User Dashboard</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1 sm:gap-2 md:gap-3">
+            <div class="hidden xl:flex items-center gap-2">
+                <button onclick="toggleDirection()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-300 dark:bg-slate-800 hover:bg-slate-500 dark:hover:bg-slate-700 transition text-xs font-bold dark:text-white">
+                    <span id="dirText">LTR</span>
+                </button>
+                <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-300 dark:bg-slate-800 hover:bg-slate-500 dark:hover:bg-slate-700 transition">
+                    <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-yellow-400"></i>
+                </button>
+            </div>
+            <div class="relative hidden xl:block">
+                <button onclick="toggleDropdown('userMenu', event)" class="p-2 sm:p-2.5 rounded-full bg-primary text-white hover:scale-105 transition shadow-md shadow-primary/30">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                </button>
+                <div id="userMenu" class="dropdown-content absolute right-0 top-full mt-2 w-36 bg-white dark:bg-slate-800 shadow-xl rounded-lg border border-slate-100 dark:border-slate-700 overflow-hidden">
+                    <a href="login.html" class="block px-4 py-2.5 text-xs font-bold hover:bg-orange-600 hover:text-white transition dark:text-white">LOGIN</a>
+                    <a href="signup.html" class="block px-4 py-2.5 text-xs font-bold hover:bg-orange-600 hover:text-white transition dark:text-white">SIGNUP</a>
+                </div>
+            </div>
+            <button onclick="toggleMobileMenu()" class="xl:hidden p-2 sm:p-2.5 text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div id="mobileMenu" class="fixed inset-y-0 right-0 w-[280px] sm:w-80 bg-white dark:bg-slate-900 z-[110] shadow-2xl p-5 sm:p-6 overflow-y-auto">
+    <div class="flex justify-between items-center mb-6 sm:mb-8">
+        <span class="text-xl font-black text-primary flex items-center gap-2"><i data-lucide="tent" class="w-5 h-5"></i>TrailGear</span>
+        <button onclick="toggleMobileMenu()" class="p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+    </div>
+    <div class="flex flex-col gap-1">
+        <button onclick="toggleMobileSubmenu('mobileHomeSub')" class="mobile-nav-link font-black">
+            <span>Home</span><i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300"></i>
+        </button>
+        <div id="mobileHomeSub" class="mobile-submenu open">
+            <a href="index.html" class="block py-3 px-4 text-sm font-medium rounded-lg dark:text-white">Home 1</a>
+            <a href="home2.html" class="block py-3 px-4 text-sm font-medium rounded-lg dark:text-white">Home 2</a>
+        </div>
+        <a href="about.html" class="mobile-nav-link">About</a>
+        <a href="book.html" class="mobile-nav-link">Rent Gear</a>
+        <a href="Services.html" class="mobile-nav-link active">Services</a>
+        <a href="Gallery.html" class="mobile-nav-link">Gear &amp; Guides</a>
+        <a href="Contact.html" class="mobile-nav-link">Contact</a>
+        <button onclick="toggleMobileSubmenu('mobileDashSub')" class="mobile-nav-link">
+            <span>Dashboard</span><i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300"></i>
+        </button>
+        <div id="mobileDashSub" class="mobile-submenu">
+            <a href="admin.html" class="flex items-center gap-2 py-3 px-4 text-sm font-medium dark:text-white"><i data-lucide="user-cog" class="w-3.5 h-3.5"></i> Admin Dashboard</a>
+            <a href="user.html" class="flex items-center gap-2 py-3 px-4 text-sm font-medium dark:text-white"><i data-lucide="user" class="w-3.5 h-3.5"></i> User Dashboard</a>
+        </div>
+        <hr class="my-4 border-slate-200 dark:border-slate-800">
+        <div class="space-y-4 px-2">
+            <div class="flex items-center justify-between text-sm font-bold dark:text-white">
+                <span>Layout Direction</span>
+                <button onclick="toggleDirection()" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold dark:text-white transition"><span id="mobileDirText">LTR</span></button>
+            </div>
+            <div class="flex items-center justify-between text-sm font-bold dark:text-white">
+                <span>Dark Mode</span>
+                <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 transition">
+                    <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-yellow-400"></i>
+                </button>
+            </div>
+        </div>
+        <hr class="my-4 border-slate-200 dark:border-slate-800">
+        <a href="login.html" class="mobile-nav-link font-black dark:text-white">LOGIN</a>
+        <a href="signup.html" class="mobile-nav-link font-black dark:text-white">SIGNUP</a>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+    function toggleDropdown(menuId, event) {
+        if (event) event.stopPropagation();
+        document.querySelectorAll('.dropdown-content').forEach(d => { if (d.id !== menuId) d.classList.remove('show'); });
+        const m = document.getElementById(menuId); if (m) m.classList.toggle('show');
+    }
+    window.addEventListener('click', function() { document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show')); });
+    document.addEventListener('click', function(e) { document.querySelectorAll('.dropdown-content').forEach(d => { if (d.contains(e.target)) e.stopPropagation(); }); });
+    function toggleMobileMenu() {
+        const m = document.getElementById('mobileMenu'); m.classList.toggle('open');
+        document.body.style.overflow = m.classList.contains('open') ? 'hidden' : 'auto';
+    }
+    window.addEventListener('resize', function() { const m = document.getElementById('mobileMenu'); if (m.classList.contains('open')) { m.classList.remove('open'); document.body.style.overflow = 'auto'; } });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { const m = document.getElementById('mobileMenu'); if (m.classList.contains('open')) { m.classList.remove('open'); document.body.style.overflow = 'auto'; } } });
+    document.addEventListener('click', function(e) {
+        const m = document.getElementById('mobileMenu'); const btn = document.querySelector('button[onclick="toggleMobileMenu()"]');
+        if (m.classList.contains('open') && !m.contains(e.target) && btn && !btn.contains(e.target)) { m.classList.remove('open'); document.body.style.overflow = 'auto'; }
+    });
+    function toggleMobileSubmenu(submenuId) {
+        const submenu = document.getElementById(submenuId); const button = submenu.previousElementSibling; const icon = button.querySelector('i[data-lucide="chevron-down"]');
+        document.querySelectorAll('.mobile-submenu').forEach(menu => {
+            if (menu.id !== submenuId && menu.classList.contains('open')) {
+                menu.classList.remove('open'); const btn = menu.previousElementSibling; const icn = btn.querySelector('i[data-lucide="chevron-down"]');
+                if (icn) { icn.style.transform = 'rotate(0deg)'; }
+            }
+        });
+        submenu.classList.toggle('open');
+        if (icon) icon.style.transform = submenu.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        setTimeout(() => lucide.createIcons(), 10);
+    }
+    function toggleTheme() {
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        setTimeout(() => lucide.createIcons(), 10);
+    }
+    if (localStorage.getItem('theme') === 'dark') { document.documentElement.classList.add('dark'); setTimeout(() => lucide.createIcons(), 10); }
+    else { document.documentElement.classList.remove('dark'); }
+    function toggleDirection() {
+        const html = document.documentElement; const d = document.getElementById('dirText'); const md = document.getElementById('mobileDirText');
+        if (html.dir === 'rtl') { html.dir = 'ltr'; if(d) d.innerText = 'LTR'; if(md) md.innerText = 'LTR'; }
+        else { html.dir = 'rtl'; if(d) d.innerText = 'RTL'; if(md) md.innerText = 'RTL'; }
+        setTimeout(() => lucide.createIcons(), 10);
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        if (document.getElementById('dirText')) document.getElementById('dirText').innerText = 'LTR';
+        if (document.getElementById('mobileDirText')) document.getElementById('mobileDirText').innerText = 'LTR';
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+            link.addEventListener('click', function() { document.getElementById('mobileMenu').classList.remove('open'); document.body.style.overflow = 'auto'; });
+        });
+    });
+</script>
+
+
+<div class="font-sans antialiased text-slate-900 dark:text-white bg-white dark:bg-darkBg transition-colors duration-300">
+
+<!-- ===== HERO SECTION ===== -->
+<section class="relative h-screen flex items-center justify-center text-center px-6 overflow-hidden bg-[#0f172a] dark:bg-black">
+    <div class="absolute inset-0 z-0">
+        <img src="img/home1-10.jpg"
+             class="w-full h-full object-cover opacity-50" alt="Outdoor Adventure Hero">
+        <div class="absolute inset-0 bg-gradient-to-b from-[#0f172a]/70 via-transparent to-[#0f172a]"></div>
+    </div>
+
+    <div class="relative z-10 max-w-4xl">
+        <div class="hero-text inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff8000]/20 border border-[#ff8000]/30 text-[#fb923c] mb-6 mx-auto">
+            <i data-lucide="compass" class="w-4 h-4"></i>
+            <span class="text-xs font-bold uppercase tracking-widest">Gear Rentals & Expert Guides</span>
+        </div>
+        <h1 class="hero-text-delay text-3xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none mb-4">
+            Gear Up. <span class="text-[#fb923c]">Go Further.</span><br>Explore Everything.
+        </h1>
+        <p class="hero-text-delay2 text-slate-300 text-xs md:text-lg font-medium mb-8 max-w-2xl mx-auto leading-relaxed">
+            Premium outdoor gear rentals, expert adventure guides, group expedition packages, and trail-prep workshops — everything you need for the perfect outdoor experience.
+        </p>
+        <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+            <a href="Gallery.html">
+                <button class="w-full md:w-auto bg-[#ff8000] text-white font-bold py-3.5 px-8 rounded-xl shadow-lg shadow-[#ff8000]/30 hover:scale-105 transition-all uppercase tracking-widest text-[10px] flex items-center justify-center gap-2">
+                    <i data-lucide="backpack" class="w-4 h-4"></i> Browse All Gear
+                </button>
+            </a>
+            <a href="#guides-section">
+                <button class="w-full md:w-auto border border-white text-white font-bold py-3.5 px-8 rounded-xl hover:bg-white hover:text-[#0f172a] transition-all uppercase tracking-widest text-[10px] flex items-center justify-center gap-2">
+                    <i data-lucide="map" class="w-4 h-4"></i> Meet Our Guides
+                </button>
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<!-- ===== RENTAL SERVICES SECTION ===== -->
+<section class="py-16 px-6 container mx-auto max-w-6xl">
+    <div class="text-center mb-14">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-[#ff8000]/10 text-[#ff8000] text-[10px] font-black uppercase tracking-widest mb-3">What We Offer</span>
+        <h2 class="text-2xl md:text-4xl font-black uppercase tracking-tighter text-slate-900 dark:text-white">
+            Our <span class="text-[#ff8000]">Rental Services</span>
+        </h2>
+        <div class="w-16 h-1 bg-[#ff8000] mx-auto mt-3 rounded-full"></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Service 1 -->
+        <div class="svc-card bg-slate-50 dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-lg group">
+            <div class="svc-icon w-12 h-12 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center mb-5 shadow-sm">
+                <i data-lucide="tent" class="w-6 h-6 text-[#ff8000]"></i>
+            </div>
+            <h3 class="text-lg font-black uppercase mb-1 text-slate-900 dark:text-white">Camping Gear Rental</h3>
+            <p class="text-[#ff8000] text-[13px] font-black mb-4 uppercase tracking-wider">Sleep under the stars 🌲</p>
+            <ul class="text-[11px] text-slate-600 dark:text-slate-400 space-y-2 border-t border-slate-200 dark:border-slate-700 pt-4">
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#ff8000] flex-shrink-0"></i> 4-Person waterproof tents</li>
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#ff8000] flex-shrink-0"></i> Sleeping bags & camp stoves</li>
+            </ul>
+        </div>
+
+        <!-- Service 2 -->
+        <div class="svc-card bg-slate-50 dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-lg group">
+            <div class="svc-icon w-12 h-12 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center mb-5 shadow-sm">
+                <i data-lucide="mountain" class="w-6 h-6 text-[#ff8000]"></i>
+            </div>
+            <h3 class="text-lg font-black uppercase mb-1 text-slate-900 dark:text-white">Hiking Gear Rental</h3>
+            <p class="text-[#ff8000] text-[13px] font-black mb-4 uppercase tracking-wider">Trail-ready in minutes 🥾</p>
+            <ul class="text-[11px] text-slate-600 dark:text-slate-400 space-y-2 border-t border-slate-200 dark:border-slate-700 pt-4">
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#ff8000] flex-shrink-0"></i> Osprey 65L backpacks</li>
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#ff8000] flex-shrink-0"></i> Trekking poles & trail boots</li>
+            </ul>
+        </div>
+
+        <!-- Service 3 -->
+        <div class="svc-card bg-slate-50 dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-lg group">
+            <div class="svc-icon w-12 h-12 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center mb-5 shadow-sm">
+                <i data-lucide="anchor" class="w-6 h-6 text-[#ff8000]"></i>
+            </div>
+            <h3 class="text-lg font-black uppercase mb-1 text-slate-900 dark:text-white">Water Sports Rental</h3>
+            <p class="text-[#ff8000] text-[13px] font-black mb-4 uppercase tracking-wider">Paddle your way 🛶</p>
+            <ul class="text-[11px] text-slate-600 dark:text-slate-400 space-y-2 border-t border-slate-200 dark:border-slate-700 pt-4">
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#ff8000] flex-shrink-0"></i> Kayaks, canoes & paddleboards</li>
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#ff8000] flex-shrink-0"></i> Life vests & dry bags included</li>
+            </ul>
+        </div>
+
+        <!-- Service 4 -->
+        <div class="svc-card bg-slate-50 dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-lg group">
+            <div class="svc-icon w-12 h-12 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center mb-5 shadow-sm">
+                <i data-lucide="shield-check" class="w-6 h-6 text-[#ff8000]"></i>
+            </div>
+            <h3 class="text-lg font-black uppercase mb-1 text-slate-900 dark:text-white">Climbing Bundle</h3>
+            <p class="text-[#ff8000] text-[13px] font-black mb-4 uppercase tracking-wider">Summit safety first 🧗</p>
+            <ul class="text-[11px] text-slate-600 dark:text-slate-400 space-y-2 border-t border-slate-200 dark:border-slate-700 pt-4">
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#ff8000] flex-shrink-0"></i> Harnesses, ropes & helmets</li>
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#ff8000] flex-shrink-0"></i> Safety-certified & inspected</li>
+            </ul>
+        </div>
+
+        <!-- Service 5 -->
+        <div class="svc-card bg-slate-50 dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-lg group">
+            <div class="svc-icon w-12 h-12 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center mb-5 shadow-sm">
+                <i data-lucide="users" class="w-6 h-6 text-[#ff8000]"></i>
+            </div>
+            <h3 class="text-lg font-black uppercase mb-1 text-slate-900 dark:text-white">Group Expedition Kits</h3>
+            <p class="text-[#ff8000] text-[13px] font-black mb-4 uppercase tracking-wider">Gear your whole crew 🎒</p>
+            <ul class="text-[11px] text-slate-600 dark:text-slate-400 space-y-2 border-t border-slate-200 dark:border-slate-700 pt-4">
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#ff8000] flex-shrink-0"></i> Custom bundles from $99</li>
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#ff8000] flex-shrink-0"></i> Corporate retreats & school trips</li>
+            </ul>
+        </div>
+
+        <!-- Service 6 -->
+        <div class="svc-card bg-slate-50 dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-lg group">
+            <div class="svc-icon w-12 h-12 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center mb-5 shadow-sm">
+                <i data-lucide="truck" class="w-6 h-6 text-[#ff8000]"></i>
+            </div>
+            <h3 class="text-lg font-black uppercase mb-1 text-slate-900 dark:text-white">Doorstep Delivery</h3>
+            <p class="text-[#ff8000] text-[13px] font-black mb-4 uppercase tracking-wider">We come to you 📦</p>
+            <ul class="text-[11px] text-slate-600 dark:text-slate-400 space-y-2 border-t border-slate-200 dark:border-slate-700 pt-4">
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#ff8000] flex-shrink-0"></i> Trailhead & campsite delivery</li>
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#ff8000] flex-shrink-0"></i> Hotel & airport drop-off</li>
+            </ul>
+        </div>
+
+    </div>
+</section>
+
+<script>if (typeof lucide !== 'undefined') { lucide.createIcons(); }</script>
+
+
+<!-- ===== WHY CHOOSE US SECTION ===== -->
+<section class="py-16 bg-slate-100 dark:bg-slate-800 px-6 overflow-hidden">
+    <div class="container mx-auto max-w-6xl">
+        <div class="flex flex-col lg:flex-row items-center gap-12">
+
+            <!-- Image -->
+            <div class="w-full lg:w-1/2 relative">
+                <div class="rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white dark:border-slate-900 relative">
+                    <img src="img/home1-11.jpg"
+                         class="w-full h-[420px] object-cover hover:scale-105 transition-transform duration-700" alt="Hiking Adventure">
+                </div>
+                <!-- Floating badge -->
+                <div class="absolute -bottom-4 -right-4 bg-[#ff8000] text-white rounded-2xl px-5 py-3 shadow-xl shadow-[#ff8000]/30 hidden md:block">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-green-100">Trusted by</p>
+                    <p class="text-2xl font-black">15,000+ Explorers</p>
+                </div>
+            </div>
+
+            <!-- Text -->
+            <div class="w-full lg:w-1/2 space-y-6">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-[#ff8000]/10 text-[#ff8000] text-[10px] font-black uppercase tracking-widest">Why TrailGear</span>
+                <h2 class="text-2xl md:text-4xl font-black uppercase tracking-tighter text-slate-900 dark:text-white">
+                    Why Choose <span class="text-[#ff8000]">Our Service?</span>
+                </h2>
+                <div class="space-y-6">
+                    <div class="flex gap-4 items-start">
+                        <div class="w-10 h-10 bg-[#ff8000]/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="shield-check" class="w-5 h-5 text-[#ff8000]"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm uppercase text-slate-900 dark:text-white">Safety-Inspected Gear</h4>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Every single item is safety-checked, sanitized, and adventure-ready before each rental. Your protection is our top priority.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start">
+                        <div class="w-10 h-10 bg-[#ff8000]/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="headphones" class="w-5 h-5 text-[#ff8000]"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm uppercase text-slate-900 dark:text-white">24/7 Trail Support</h4>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Stuck on a ridge or lost a piece of gear? Our support team is a call away, day or night, wherever your trail takes you.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start">
+                        <div class="w-10 h-10 bg-[#ff8000]/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="dollar-sign" class="w-5 h-5 text-[#ff8000]"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm uppercase text-slate-900 dark:text-white">Transparent Pricing</h4>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">No hidden charges. Daily rates from $10, weekly bundles from $50. Pay only for what you rent.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start">
+                        <div class="w-10 h-10 bg-[#ff8000]/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="leaf" class="w-5 h-5 text-[#ff8000]"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm uppercase text-slate-900 dark:text-white">Eco-Responsible</h4>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Shared gear means less manufacturing waste. We're committed to protecting the wild places you love exploring.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>if (typeof lucide !== 'undefined') { lucide.createIcons(); }</script>
+
+
+<!-- ===== GEAR CATEGORIES SECTION ===== -->
+<section class="py-20 px-6 bg-white dark:bg-darkBg font-sans">
+    <div class="container mx-auto max-w-6xl">
+        <div class="text-center mb-16">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-[#ff8000]/10 text-[#ff8000] text-[10px] font-black uppercase tracking-widest mb-3">All Categories</span>
+            <h2 class="text-3xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-none">
+                Gear <span class="text-[#ff8000]">Categories</span>
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400 mt-4 text-sm md:text-base max-w-xl mx-auto italic">
+                From summit to shore — choose the perfect kit from our diverse adventure gear range.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+            <!-- Camping -->
+            <div class="cat-card bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col items-center text-center">
+                <div class="w-full h-48 overflow-hidden relative">
+                    <img src="img/home1-12.jpg"
+                         class="w-full h-full object-cover" alt="Camping Gear">
+                    <div class="absolute inset-0 bg-black/10"></div>
+                </div>
+                <div class="p-8 flex flex-col items-center">
+                    <div class="cat-icon w-14 h-14 bg-slate-50 dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-4 -mt-14 relative z-10 shadow-lg">
+                        <i data-lucide="tent" class="w-7 h-7 text-[#ff8000]"></i>
+                    </div>
+                    <h4 class="text-xl font-black uppercase text-slate-900 dark:text-white tracking-tight mb-1">Camping</h4>
+                    <p class="text-[#ff8000] text-[10px] font-bold uppercase tracking-widest mb-4">Outdoor Basecamp</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">Tents, sleeping bags, lanterns, camp stoves & hammocks. Everything for a perfect night outdoors.</p>
+                    <ul class="text-[11px] text-slate-600 dark:text-slate-400 space-y-2 text-left w-full border-t border-slate-100 dark:border-slate-700 pt-4">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-[#ff8000] flex-shrink-0"></i> 3 & 4 Season Tents</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-[#ff8000] flex-shrink-0"></i> Mummy & Quilt Sleeping Bags</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Hiking -->
+            <div class="cat-card bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col items-center text-center">
+                <div class="w-full h-48 overflow-hidden relative">
+                    <img src="img/home1-13.jpg"
+                         class="w-full h-full object-cover" alt="Hiking Gear">
+                    <div class="absolute inset-0 bg-black/10"></div>
+                </div>
+                <div class="p-8 flex flex-col items-center">
+                    <div class="cat-icon w-14 h-14 bg-slate-50 dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-4 -mt-14 relative z-10 shadow-lg">
+                        <i data-lucide="backpack" class="w-7 h-7 text-[#ff8000]"></i>
+                    </div>
+                    <h4 class="text-xl font-black uppercase text-slate-900 dark:text-white tracking-tight mb-1">Hiking</h4>
+                    <p class="text-[#ff8000] text-[10px] font-bold uppercase tracking-widest mb-4">Trail Essentials</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">Backpacks, boots, trekking poles, GPS devices & hydration systems for any trail.</p>
+                    <ul class="text-[11px] text-slate-600 dark:text-slate-400 space-y-2 text-left w-full border-t border-slate-100 dark:border-slate-700 pt-4">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-[#ff8000] flex-shrink-0"></i> 40L to 75L Packs</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-[#ff8000] flex-shrink-0"></i> Waterproof Trail Boots</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Climbing -->
+            <div class="cat-card bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col items-center text-center">
+                <div class="w-full h-48 overflow-hidden relative">
+                    <img src="img/home2-1.jpg"
+                         class="w-full h-full object-cover" alt="Climbing Gear">
+                    <div class="absolute inset-0 bg-black/10"></div>
+                </div>
+                <div class="p-8 flex flex-col items-center">
+                    <div class="cat-icon w-14 h-14 bg-slate-50 dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-4 -mt-14 relative z-10 shadow-lg">
+                        <i data-lucide="triangle" class="w-7 h-7 text-[#ff8000]"></i>
+                    </div>
+                    <h4 class="text-xl font-black uppercase text-slate-900 dark:text-white tracking-tight mb-1">Climbing</h4>
+                    <p class="text-[#ff8000] text-[10px] font-bold uppercase tracking-widest mb-4">Summit Ready</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">Complete climbing systems including harnesses, ropes, carabiners, belay devices & helmets.</p>
+                    <ul class="text-[11px] text-slate-600 dark:text-slate-400 space-y-2 text-left w-full border-t border-slate-100 dark:border-slate-700 pt-4">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-[#ff8000] flex-shrink-0"></i> UIAA Certified Ropes</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-[#ff8000] flex-shrink-0"></i> Full Body Harnesses</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Water Sports -->
+            <div class="cat-card bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col items-center text-center">
+                <div class="w-full h-48 overflow-hidden relative">
+                    <img src="img/home2-2.jpg"
+                         class="w-full h-full object-cover" alt="Water Sports Gear">
+                    <div class="absolute inset-0 bg-black/10"></div>
+                </div>
+                <div class="p-8 flex flex-col items-center">
+                    <div class="cat-icon w-14 h-14 bg-slate-50 dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-4 -mt-14 relative z-10 shadow-lg">
+                        <i data-lucide="waves" class="w-7 h-7 text-[#ff8000]"></i>
+                    </div>
+                    <h4 class="text-xl font-black uppercase text-slate-900 dark:text-white tracking-tight mb-1">Water Sports</h4>
+                    <p class="text-[#ff8000] text-[10px] font-bold uppercase tracking-widest mb-4">Rule the Water</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">Kayaks, canoes, stand-up paddleboards, life vests & dry bags for rivers, lakes and coasts.</p>
+                    <ul class="text-[11px] text-slate-600 dark:text-slate-400 space-y-2 text-left w-full border-t border-slate-100 dark:border-slate-700 pt-4">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-[#ff8000] flex-shrink-0"></i> Single & Tandem Kayaks</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-[#ff8000] flex-shrink-0"></i> Coast Guard Life Vests</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>if (typeof lucide !== 'undefined') { lucide.createIcons(); }</script>
+
+
+<!-- ===== ADVENTURE GUIDES SECTION ===== -->
+<section id="guides-section" class="py-20 px-6 bg-slate-50 dark:bg-slate-900 font-sans">
+    <div class="container mx-auto max-w-6xl">
+
+        <div class="text-center mb-14">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-[#ff8000]/10 text-[#ff8000] text-[10px] font-black uppercase tracking-widest mb-3">Expert</span>
+            <h2 class="text-3xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-none">
+                 Our <span class="text-[#ff8000]">Adventure</span>
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400 mt-4 text-sm md:text-base max-w-2xl mx-auto">
+                Every TrailGear guide is a certified outdoor professional with years of field experience. Book a guided adventure and let our experts take you further — safely.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+
+            <!-- Guide 1 -->
+            <div class="guide-card bg-white dark:bg-slate-800 rounded-3xl overflow-hidden shadow-md border border-slate-100 dark:border-slate-700 group text-center">
+                <div class="h-52 overflow-hidden relative">
+                    <img src="img/home2-3.jpg"
+                         alt="Guide Alex Carter" class="w-full h-full object-cover object-top">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+                    <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-1">
+                        <span class="bg-[#ff8000] text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase">Mountaineering</span>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h4 class="text-base font-black text-slate-900 dark:text-white mb-0.5">Alex Carter</h4>
+                    <p class="text-[10px] text-[#ff8000] font-bold uppercase tracking-widest mb-3">Lead Mountain Guide</p>
+                    <div class="flex items-center justify-center gap-1 mb-3">
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <span class="text-[9px] text-slate-400 ml-1">5.0 (127 trips)</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mb-4">12+ years guiding in Yosemite & Rocky Mountain. AMGA certified. Specialises in alpine routes.</p>
+                    <div class="flex flex-wrap justify-center gap-1 mb-4">
+                        <span class="text-[8px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-bold">AMGA Certified</span>
+                        <span class="text-[8px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-bold">WFR</span>
+                        <span class="text-[8px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-bold">CPR</span>
+                    </div>
+                    <a href="Contact.html" class="block w-full bg-[#ff8000] text-white py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#c2410c] transition flex items-center justify-center gap-1.5">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Book Alex
+                    </a>
+                </div>
+            </div>
+
+            <!-- Guide 2 -->
+            <div class="guide-card bg-white dark:bg-slate-800 rounded-3xl overflow-hidden shadow-md border border-slate-100 dark:border-slate-700 group text-center">
+                <div class="h-52 overflow-hidden relative">
+                    <img src="img/home2-4.jpg"
+                         alt="Guide Maya Chen" class="w-full h-full object-cover object-top">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+                    <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-1">
+                        <span class="bg-[#ff8000] text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase">Kayaking</span>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h4 class="text-base font-black text-slate-900 dark:text-white mb-0.5">Maya Chen</h4>
+                    <p class="text-[10px] text-[#ff8000] font-bold uppercase tracking-widest mb-3">Water Sports Expert</p>
+                    <div class="flex items-center justify-center gap-1 mb-3">
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <span class="text-[9px] text-slate-400 ml-1">4.9 (98 trips)</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mb-4">Olympic Peninsula & coastal kayaking and specialist. ACA Level 4 certified sea kayak instructor.</p>
+                    <div class="flex flex-wrap justify-center gap-1 mb-4">
+                        <span class="text-[8px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-bold">ACA L4</span>
+                        <span class="text-[8px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-bold">Swiftwater</span>
+                        <span class="text-[8px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-bold">First Aid</span>
+                    </div>
+                    <a href="Contact.html" class="block w-full bg-[#ff8000] text-white py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#c2410c] transition flex items-center justify-center gap-1.5">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Book Maya
+                    </a>
+                </div>
+            </div>
+
+            <!-- Guide 3 -->
+            <div class="guide-card bg-white dark:bg-slate-800 rounded-3xl overflow-hidden shadow-md border border-slate-100 dark:border-slate-700 group text-center relative">
+                <div class="absolute top-3 left-3 bg-amber-500 text-white text-[8px] font-black px-2.5 py-1 rounded-full z-10 uppercase">Top Rated</div>
+                <div class="h-52 overflow-hidden relative">
+                    <img src="img/home2-5.jpg"
+                         alt="Guide Daniel Ross" class="w-full h-full object-cover object-top">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+                    <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-1">
+                        <span class="bg-[#ff8000] text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase">Wilderness</span>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h4 class="text-base font-black text-slate-900 dark:text-white mb-0.5">Daniel Ross</h4>
+                    <p class="text-[10px] text-[#ff8000] font-bold uppercase tracking-widest mb-3">Wilderness Survival Expert</p>
+                    <div class="flex items-center justify-center gap-1 mb-3">
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <span class="text-[9px] text-slate-400 ml-1">5.0 (215 trips)</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mb-4">15+ years multi-day wilderness expeditions. Zion & Grand Canyon survival specialist. NOLS graduate.</p>
+                    <div class="flex flex-wrap justify-center gap-1 mb-4">
+                        <span class="text-[8px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-bold">NOLS</span>
+                        <span class="text-[8px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-bold">WEMT</span>
+                        <span class="text-[8px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-bold">Navigation</span>
+                    </div>
+                    <a href="Contact.html" class="block w-full bg-[#ff8000] text-white py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#c2410c] transition flex items-center justify-center gap-1.5">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Book Daniel
+                    </a>
+                </div>
+            </div>
+
+            <!-- Guide 4 -->
+            <div class="guide-card bg-white dark:bg-slate-800 rounded-3xl overflow-hidden shadow-md border border-slate-100 dark:border-slate-700 group text-center">
+                <div class="h-52 overflow-hidden relative">
+                    <img src="img/home2-6.jpg"
+                         alt="Guide Sara Patel" class="w-full h-full object-cover object-top">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+                    <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-1">
+                        <span class="bg-[#ff8000] text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase">Family Trips</span>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h4 class="text-base font-black text-slate-900 dark:text-white mb-0.5">Sara Patel</h4>
+                    <p class="text-[10px] text-[#ff8000] font-bold uppercase tracking-widest mb-3">Family & Group Guide</p>
+                    <div class="flex items-center justify-center gap-1 mb-3">
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <i data-lucide="star" class="w-3 h-3 text-[#ff8000] fill-[#ff8000]"></i>
+                        <span class="text-[9px] text-slate-400 ml-1">4.9 (163 trips)</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mb-4">Specialist in family-friendly hikes, beginner camping & corporate group adventures at Appalachian & national parks.</p>
+                    <div class="flex flex-wrap justify-center gap-1 mb-4">
+                        <span class="text-[8px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-bold">Leave No Trace</span>
+                        <span class="text-[8px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-bold">CPR/AED</span>
+                    </div>
+                    <a href="Contact.html" class="block w-full bg-[#ff8000] text-white py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#c2410c] transition flex items-center justify-center gap-1.5">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Book Sara
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Guide CTA Banner -->
+        <div class="relative overflow-hidden bg-[#0f172a] dark:bg-slate-800 rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+            <div class="absolute inset-0 opacity-10">
+                <img src="img/home2-7.jpg" class="w-full h-full object-cover">
+            </div>
+            <div class="relative z-10 text-center md:text-left">
+                <span class="inline-block px-3 py-1 rounded-full bg-[#ff8000]/30 text-[#fb923c] text-[9px] font-black uppercase tracking-widest mb-3">Guided Adventures</span>
+                <h3 class="text-2xl md:text-3xl font-black text-white mb-2">Want a Guide on Your Next Trip?</h3>
+                <p class="text-slate-300 text-sm max-w-lg">Our expert guides handle the planning, safety, and navigation — you just enjoy the adventure. Day hikes, multi-day expeditions, or custom group trips available.</p>
+            </div>
+            <a href="Contact.html" class="relative z-10 flex-shrink-0 bg-[#ff8000] text-white font-black py-4 px-10 rounded-2xl hover:bg-white hover:text-[#ff8000] transition-all duration-300 uppercase tracking-widest text-sm shadow-lg flex items-center gap-2 whitespace-nowrap">
+                <i data-lucide="map" class="w-4 h-4"></i> Plan a Guided Trip
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>if (typeof lucide !== 'undefined') { lucide.createIcons(); }</script>
+
+</div><!-- end font-sans wrapper -->
+
+
+<!-- ===== FOOTER ===== -->
+<footer class="bg-[#0f172a] dark:bg-slate-900 text-white pt-16 pb-8 font-sans overflow-hidden">
+    <div class="container mx-auto px-4 md:px-8 max-w-[1300px]">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+
+            <div class="space-y-6">
+                <span class="text-2xl md:text-3xl font-black tracking-tighter flex items-center gap-2 text-[#fb923c]">
+                    <i data-lucide="tent" class="w-7 h-7 md:w-8 md:h-8"></i>
+                    Trail<span class="text-white">Gear</span>
+                </span>
+                <p class="text-white/70 text-sm leading-relaxed">Premium outdoor gear rental services across major national parks and adventure destinations. We equip adventurers for extraordinary experiences.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ff8000] transition-all"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ff8000] transition-all"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ff8000] transition-all"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <h4 class="text-lg font-black uppercase tracking-widest text-white">Company</h4>
+                <ul class="space-y-3 text-white/70 text-sm">
+                    <li><a href="index.html" class="hover:text-[#fb923c] transition-colors">Home</a></li>
+                    <li><a href="about.html" class="hover:text-[#fb923c] transition-colors">About</a></li>
+                    <li><a href="Services.html" class="hover:text-[#fb923c] transition-colors">Services</a></li>
+                    <li><a href="Gallery.html" class="hover:text-[#fb923c] transition-colors">Gear &amp; Guides</a></li>
+                    <li><a href="Contact.html" class="hover:text-[#fb923c] transition-colors">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="space-y-6">
+                <h4 class="text-lg font-black uppercase tracking-widest text-white">Destinations</h4>
+                <ul class="space-y-3 text-white/70 text-sm">
+                    <li><a href="#" class="hover:text-[#fb923c] transition-colors">Yosemite, CA</a></li>
+                    <li><a href="#" class="hover:text-[#fb923c] transition-colors">Rocky Mountain, CO</a></li>
+                    <li><a href="#" class="hover:text-[#fb923c] transition-colors">Zion Canyon, UT</a></li>
+                    <li><a href="#" class="hover:text-[#fb923c] transition-colors">Grand Canyon, AZ</a></li>
+                    <li><a href="#" class="hover:text-[#fb923c] transition-colors">Olympic Peninsula, WA</a></li>
+                </ul>
+            </div>
+
+            <div class="space-y-6">
+                <h4 class="text-lg font-black uppercase tracking-widest text-white">Get in Touch</h4>
+                <ul class="space-y-4 text-sm">
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-[#fb923c] flex-shrink-0"></i>
+                        <span class="text-white/70">456 Trail Blvd,<br>Denver, CO 80202</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i data-lucide="phone" class="w-5 h-5 text-[#fb923c] flex-shrink-0"></i>
+                        <span class="text-white/70">+1 (800) 874-2559</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i data-lucide="mail" class="w-5 h-5 text-[#fb923c] flex-shrink-0"></i>
+                        <span class="text-white/70">hello@trailgear.com</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="pt-8 border-t border-white/20 flex flex-col md:flex-row justify-between items-center gap-4 text-[12px] font-bold text-white/60">
+            <p>© 2026 TrailGear Outdoor Rentals. All Rights Reserved.</p>
+            <div class="flex gap-6 uppercase tracking-widest">
+                <a href="#" class="hover:text-[#fb923c]">Sitemap</a>
+                <a href="#" class="hover:text-[#fb923c]">Refund Policy</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+    document.addEventListener('DOMContentLoaded', function() { lucide.createIcons(); });
+</script>
+
+</body>
+</html>

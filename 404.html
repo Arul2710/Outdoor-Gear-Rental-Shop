@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Outdoor Gear Rental Shop | Page Not Found</title>
+    <style>
+        /* CSS Variables for colors */
+        :root {
+            --primary-green: #ff8000;
+            --darker-green: #117a39; /* Slight variant for animation */
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif; /* Cleaner font */
+        }
+
+        body {
+            /* 1. Animated Gradient Background */
+            background: linear-gradient(-45deg, #ff8000, #117a39, #1db954, #148f41);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--white);
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Gradient Animation Keyframes */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1); /* Subtle frost effect */
+            border-radius: 15px;
+            backdrop-filter: blur(5px); /* Modern blur effect */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 2. Title & Text */
+        h1 {
+            font-size: 140px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 0px;
+            color: rgba(255, 255, 255, 0.8);
+            position: relative;
+        }
+
+        h2 {
+            font-size: 32px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .rental-shop {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        /* 3. Button */
+        .btn {
+            display: inline-block;
+            padding: 15px 35px;
+            background-color: var(--white);
+            color: var(--primary-green);
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 18px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="rental-shop">Outdoor Gear Rental Shop</div>
+        <h1>404</h1>
+        <h2>Trail Lost</h2>
+        <p>Looks like this trail leads nowhere! The page you're searching for is off-grid.</p>
+        
+        <a href="/" class="btn">Explore Gear</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlTag" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>TrailGear – My Gear Dashboard</title>
+    <link rel="icon" type="image/png" href="img/fav icons.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { primary: '#ff8000' },
+                    screens: { 'xs': '475px', 'sm': '640px', 'md': '768px', 'lg': '1024px', 'xl': '1280px' }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        * { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; width: 100%; background: #F0FDF4; }
+        .dark body { background: #0f172a; }
+
+        .sidebar-active { background: rgba(255, 128, 0, 0.1); border-left: 4px solid #ff8000; color: #ff8000 !important; font-weight: 700; }
+        [dir="rtl"] .sidebar-active { border-left: 0; border-right: 4px solid #ff8000; }
+
+        .custom-shadow { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+        .dark .custom-shadow { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
+
+        .page-node { display: none; opacity: 0; transform: translateY(10px); }
+        .page-node.active { display: block; animation: fadeInUp 0.4s ease forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 1023px) { #sidebar { width: 280px; box-shadow: 0 0 30px rgba(0,0,0,0.15); } .dark #sidebar { box-shadow: 0 0 30px rgba(0,0,0,0.5); } }
+        button, a { min-height: 44px; min-width: 44px; cursor: pointer; }
+        @media (max-width: 640px) { table { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; } }
+
+        .status-badge { padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .gear-card:hover { transform: translateY(-4px); }
+        .gear-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    </style>
+</head>
+<body class="bg-[#F0FDF4] dark:bg-[#0f172a] text-gray-900 dark:text-gray-100 antialiased">
+
+<!-- Mobile Overlay -->
+<div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden transition-opacity duration-300"></div>
+
+<div class="flex min-h-screen relative w-full overflow-x-hidden">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-[280px] bg-white dark:bg-[#0f2318] text-gray-500 dark:text-gray-400 transition-all duration-300 ease-in-out lg:translate-x-0 -translate-x-full border-r border-gray-100 dark:border-green-900/30 overflow-y-auto">
+        <div class="p-5 h-full flex flex-col">
+
+            <!-- Logo -->
+            <div class="flex items-center justify-between mb-6">
+                <a href="index.html" class="text-xl sm:text-2xl font-black tracking-tighter flex items-center gap-2 text-primary">
+                    <i data-lucide="tent" class="w-6 h-6 md:w-7 md:h-7"></i>
+                    Trail<span class="text-black dark:text-white">Gear</span>
+                </a>
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-green-900/30 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- User Profile Card -->
+            <div class="bg-gradient-to-r from-primary/10 to-primary/5 p-4 rounded-2xl mb-6 border border-primary/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-xl flex-shrink-0">JM</div>
+                    <div>
+                        <p class="font-black text-gray-900 dark:text-white">Jamie Morrison</p>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">jamie.m@trailgear.com</p>
+                        <div class="flex items-center gap-1 mt-1">
+                            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                            <span class="text-[8px] font-bold text-orange-600 dark:text-orange-400 uppercase">Trail Member</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 space-y-1 overflow-y-auto">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 ml-2">
+                    <i data-lucide="menu" class="w-3 h-3 inline mr-1"></i> MY ACCOUNT
+                </p>
+
+                <a href="javascript:void(0)" onclick="showPage('profile')" id="btn-profile" class="nav-btn flex items-center gap-3 p-3.5 rounded-xl sidebar-active transition-all hover:bg-gray-50 dark:hover:bg-green-900/20 group">
+                    <i data-lucide="user-circle" class="w-5 h-5 group-hover:scale-110 transition-transform text-primary"></i>
+                    <span class="font-medium">My Profile</span>
+                    <span class="ml-auto bg-primary/10 text-primary text-[8px] font-black px-2 py-1 rounded-full">85%</span>
+                </a>
+
+                <a href="javascript:void(0)" onclick="showPage('orders')" id="btn-orders" class="nav-btn flex items-center gap-3 p-3.5 rounded-xl hover:bg-gray-50 dark:hover:bg-green-900/20 transition-all group">
+                    <i data-lucide="history" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">Rental History</span>
+                    <span class="ml-auto bg-primary/10 text-primary text-[8px] font-black px-2 py-1 rounded-full">9</span>
+                </a>
+
+                <a href="javascript:void(0)" onclick="showPage('saved')" id="btn-saved" class="nav-btn flex items-center gap-3 p-3.5 rounded-xl hover:bg-gray-50 dark:hover:bg-green-900/20 transition-all group">
+                    <i data-lucide="heart" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">Saved Gear</span>
+                    <span class="ml-auto bg-primary/10 text-primary text-[8px] font-black px-2 py-1 rounded-full">5</span>
+                </a>
+
+                <a href="javascript:void(0)" onclick="showPage('messages')" id="btn-messages" class="nav-btn flex items-center gap-3 p-3.5 rounded-xl hover:bg-gray-50 dark:hover:bg-green-900/20 transition-all group">
+                    <i data-lucide="message-circle" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">Messages</span>
+                    <span class="ml-auto bg-red-500 text-white text-[8px] font-black px-2 py-1 rounded-full">2</span>
+                </a>
+
+                <a href="javascript:void(0)" onclick="showPage('settings')" id="btn-settings" class="nav-btn flex items-center gap-3 p-3.5 rounded-xl hover:bg-gray-50 dark:hover:bg-green-900/20 transition-all group">
+                    <i data-lucide="settings" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">Settings</span>
+                </a>
+            </nav>
+
+            <!-- Bottom Controls -->
+            <div class="pt-6 mt-6 border-t border-gray-100 dark:border-green-900/30">
+                <div class="flex items-center justify-between bg-gray-50 dark:bg-green-900/20 p-2 rounded-2xl">
+                    <button onclick="toggleDirection()" class="p-2.5 hover:bg-white dark:hover:bg-green-900/40 rounded-xl shadow-sm transition-all text-gray-400 hover:text-primary flex items-center gap-1">
+                        <i data-lucide="languages" class="w-4 h-4"></i>
+                        <span id="dirText" class="text-[10px] font-black">LTR</span>
+                    </button>
+                    <button onclick="toggleDarkMode()" class="p-2.5 bg-white dark:bg-green-900/40 rounded-xl text-primary shadow-sm hover:scale-110 transition-all">
+                        <i id="themeIcon" data-lucide="moon" class="w-4 h-4"></i>
+                    </button>
+                    <a href="login.html">
+                        <button class="p-2.5 bg-red-50 dark:bg-red-500/10 rounded-xl text-red-500 hover:scale-110 transition-all">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </button>
+                    </a>
+                </div>
+
+                <!-- Trail Membership Badge -->
+                <div class="mt-4 p-3 bg-gradient-to-r from-[#ff8000]/10 to-transparent rounded-xl border border-[#ff8000]/20">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="mountain" class="w-4 h-4 text-[#ff8000]"></i>
+                        <p class="text-[9px] font-black uppercase tracking-wider text-[#ff8000]">TrailGear Pro · 1,840 pts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="flex-1 lg:ml-[280px] p-4 sm:p-5 md:p-6 lg:p-8 transition-all duration-300 w-full max-w-full overflow-x-hidden">
+
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-6 sm:mb-8">
+            <div class="flex-1">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2.5 bg-white dark:bg-[#0f2318] rounded-xl custom-shadow border border-gray-50 dark:border-green-900/30">
+                        <i id="menuIcon" data-lucide="menu" class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 dark:text-white"></i>
+                    </button>
+                    <div>
+                        <h1 id="pageTitle" class="text-xl sm:text-2xl font-black tracking-tight uppercase">MY PROFILE</h1>
+                        <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mt-0.5">
+                            <span class="text-primary font-bold">Welcome back</span> · Jamie Morrison
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="hidden sm:flex items-center gap-2 bg-white dark:bg-[#0f2318] px-4 py-2 rounded-xl custom-shadow border border-gray-50 dark:border-green-900/20">
+                    <i data-lucide="bell" class="w-4 h-4 text-primary"></i>
+                    <span class="text-xs font-medium">2</span>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20">
+                    <span class="text-primary font-bold text-sm">JM</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== PAGES ===== -->
+        <div id="mainDisplay" class="space-y-6">
+
+            <!-- === 1. MY PROFILE PAGE === -->
+            <div id="page-profile" class="page-node active">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+
+                    <!-- Profile Card -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white dark:bg-[#0f2318] p-6 rounded-2xl custom-shadow border border-gray-100 dark:border-green-900/30">
+                            <div class="text-center">
+                                <div class="w-24 h-24 mx-auto bg-gradient-to-br from-primary/20 to-primary/10 rounded-full flex items-center justify-center text-primary font-black text-3xl mb-4 border-4 border-white dark:border-green-900/30 shadow-lg">JM</div>
+                                <h2 class="text-xl font-black text-gray-900 dark:text-white">Jamie Morrison</h2>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Adventurer since Jan 2025</p>
+                                <div class="flex justify-center gap-2 mt-4 flex-wrap">
+                                    <span class="bg-green-100 dark:bg-green-900/30 text-orange-600 dark:text-orange-400 text-[10px] font-black px-3 py-1.5 rounded-full uppercase flex items-center gap-1">
+                                        <i data-lucide="shield-check" class="w-3 h-3"></i> Verified
+                                    </span>
+                                    <span class="bg-[#ff8000]/10 text-[#ff8000] text-[10px] font-black px-3 py-1.5 rounded-full uppercase flex items-center gap-1">
+                                        <i data-lucide="mountain" class="w-3 h-3"></i> Pro Member
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-6 border-t border-gray-100 dark:border-green-900/30 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-500">Email</span>
+                                    <span class="text-xs font-bold">jamie.m@trailgear.com</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-500">Phone</span>
+                                    <span class="text-xs font-bold">+1 (720) 555-8340</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-500">Base Camp</span>
+                                    <span class="text-xs font-bold">Denver, CO</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-500">Trips Completed</span>
+                                    <span class="text-xs font-bold text-primary">9 Adventures</span>
+                                </div>
+                            </div>
+
+                            <button class="w-full mt-6 bg-primary text-white text-xs font-black py-3 px-4 rounded-xl hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                                <i data-lucide="edit" class="w-4 h-4"></i> Edit Profile
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Profile Details -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white dark:bg-[#0f2318] p-6 rounded-2xl custom-shadow border border-gray-100 dark:border-green-900/30 h-full">
+                            <h3 class="text-sm font-black uppercase mb-6 flex items-center gap-2">
+                                <i data-lucide="user-check" class="w-5 h-5 text-primary"></i>
+                                Adventurer Information
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider">Full Name</label>
+                                    <p class="text-sm font-bold mt-1">Jamie Morrison</p>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider">Date of Birth</label>
+                                    <p class="text-sm font-bold mt-1">03/22/1993</p>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider">Email Address</label>
+                                    <p class="text-sm font-bold mt-1">jamie.m@trailgear.com</p>
+                                    <span class="text-[8px] text-orange-600 font-bold">✓ Verified</span>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider">Mobile Number</label>
+                                    <p class="text-sm font-bold mt-1">+1 (720) 555-8340</p>
+                                    <span class="text-[8px] text-orange-600 font-bold">✓ Verified</span>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider">Address</label>
+                                    <p class="text-sm font-bold mt-1">1247 Trail Ridge Rd<br>Denver, CO 80205</p>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider">Emergency Contact</label>
+                                    <p class="text-sm font-bold mt-1">+1 (720) 555-9100</p>
+                                </div>
+                            </div>
+
+                            <!-- Verification Status -->
+                            <div class="mt-8 p-4 bg-gray-50 dark:bg-green-900/10 rounded-xl border border-gray-100 dark:border-green-900/20">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-xs font-black uppercase">Adventure Profile Completion</h4>
+                                    <span class="bg-green-100 text-orange-600 text-[8px] font-black px-3 py-1.5 rounded-full">85% Complete</span>
+                                </div>
+                                <div class="w-full bg-gray-200 dark:bg-green-900/30 rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 mt-4">
+                                    <div class="text-center">
+                                        <span class="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                                            <i data-lucide="check" class="w-3 h-3 text-orange-600"></i>
+                                        </span>
+                                        <p class="text-[8px] font-bold mt-1">Photo ID</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <span class="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                                            <i data-lucide="check" class="w-3 h-3 text-orange-600"></i>
+                                        </span>
+                                        <p class="text-[8px] font-bold mt-1">Waiver Signed</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <span class="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto">
+                                            <i data-lucide="clock" class="w-3 h-3 text-gray-500"></i>
+                                        </span>
+                                        <p class="text-[8px] font-bold mt-1">Experience Level</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white dark:bg-[#0f2318] p-6 rounded-2xl custom-shadow border border-gray-100 dark:border-green-900/30">
+                    <h3 class="text-sm font-black uppercase mb-4 flex items-center gap-2">
+                        <i data-lucide="activity" class="w-5 h-5 text-primary"></i>
+                        Recent Trail Activity
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-green-900/10 rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                                    <i data-lucide="package-check" class="w-4 h-4 text-orange-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold">Gear returned & inspected</p>
+                                    <p class="text-[8px] text-gray-400">2 hours ago · Osprey 65L Backpack</p>
+                                </div>
+                            </div>
+                            <span class="text-[8px] font-black text-orange-600">Returned</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-green-900/10 rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                                    <i data-lucide="laptop" class="w-4 h-4 text-gray-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold">Account updated via MacBook</p>
+                                    <p class="text-[8px] text-gray-400">Yesterday · Boulder, CO</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 2. RENTAL HISTORY PAGE === -->
+            <div id="page-orders" class="page-node">
+                <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 rounded-2xl custom-shadow border border-gray-100 dark:border-green-900/30">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-black uppercase flex items-center gap-2">
+                                <i data-lucide="history" class="w-5 h-5 text-primary"></i>
+                                Rental History
+                            </h3>
+                            <p class="text-[9px] sm:text-[10px] text-gray-400 mt-1">Your adventure rental history · 9 total rentals</p>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button class="flex-1 sm:flex-none bg-gray-100 dark:bg-green-900/20 text-gray-600 dark:text-gray-300 text-[9px] font-black px-4 py-2.5 rounded-xl flex items-center justify-center gap-1">
+                                <i data-lucide="filter" class="w-3 h-3"></i> Filter
+                            </button>
+                            <button class="flex-1 sm:flex-none bg-primary text-white text-[9px] font-black px-4 py-2.5 rounded-xl flex items-center justify-center gap-1">
+                                <i data-lucide="download" class="w-3 h-3"></i> Download
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                        <div class="p-3 bg-gray-50 dark:bg-green-900/10 rounded-xl text-center border border-gray-100 dark:border-green-900/20">
+                            <p class="text-[8px] font-black text-gray-400 uppercase">Total</p>
+                            <p class="text-lg font-black mt-1">9</p>
+                        </div>
+                        <div class="p-3 bg-gray-50 dark:bg-green-900/10 rounded-xl text-center border border-gray-100 dark:border-green-900/20">
+                            <p class="text-[8px] font-black text-gray-400 uppercase">Active</p>
+                            <p class="text-lg font-black mt-1 text-primary">1</p>
+                        </div>
+                        <div class="p-3 bg-gray-50 dark:bg-green-900/10 rounded-xl text-center border border-gray-100 dark:border-green-900/20">
+                            <p class="text-[8px] font-black text-gray-400 uppercase">Completed</p>
+                            <p class="text-lg font-black mt-1 text-orange-600">7</p>
+                        </div>
+                        <div class="p-3 bg-gray-50 dark:bg-green-900/10 rounded-xl text-center border border-gray-100 dark:border-green-900/20">
+                            <p class="text-[8px] font-black text-gray-400 uppercase">Cancelled</p>
+                            <p class="text-lg font-black mt-1 text-red-500">1</p>
+                        </div>
+                    </div>
+
+                    <!-- Rental List -->
+                    <div class="space-y-4">
+
+                        <!-- Active Rental -->
+                        <div class="p-4 bg-gradient-to-r from-primary/5 to-transparent rounded-2xl border border-primary/20">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                                        <i data-lucide="tent" class="w-6 h-6 text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <p class="font-black text-sm">4-Person Camping Tent</p>
+                                            <span class="bg-primary/10 text-primary text-[8px] font-black px-2 py-1 rounded-full uppercase">Active</span>
+                                        </div>
+                                        <p class="text-[9px] text-gray-400 mt-1">Rental #TG-4021 · Jun 14, 2026 · Yosemite, CA</p>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[8px] font-bold">$25/day</span>
+                                            <span class="text-[8px] text-gray-400">•</span>
+                                            <span class="text-[8px] text-gray-400">5 days</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                                    <div class="text-right">
+                                        <p class="text-xs font-black">$125</p>
+                                        <p class="text-[8px] text-gray-400">Total</p>
+                                    </div>
+                                    <button class="p-2 bg-white dark:bg-green-900/20 rounded-lg border border-gray-200 dark:border-green-900/30">
+                                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Completed Rental -->
+                        <div class="p-4 bg-gray-50 dark:bg-green-900/10 rounded-2xl border border-gray-100 dark:border-green-900/20">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
+                                        <i data-lucide="backpack" class="w-6 h-6 text-blue-500"></i>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <p class="font-black text-sm">Osprey 65L Backpack</p>
+                                            <span class="bg-green-100 text-orange-600 text-[8px] font-black px-2 py-1 rounded-full uppercase">Completed</span>
+                                        </div>
+                                        <p class="text-[9px] text-gray-400 mt-1">Rental #TG-4018 · Jun 8, 2026 · Rocky Mountain, CO</p>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[8px] font-bold">$15/day</span>
+                                            <span class="text-[8px] text-gray-400">•</span>
+                                            <span class="text-[8px] text-gray-400">3 days</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                                    <div class="text-right">
+                                        <p class="text-xs font-black">$45</p>
+                                        <p class="text-[8px] text-gray-400">Paid</p>
+                                    </div>
+                                    <button class="p-2 bg-white dark:bg-green-900/20 rounded-lg border border-gray-200 dark:border-green-900/30">
+                                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Completed with Rating -->
+                        <div class="p-4 bg-gray-50 dark:bg-green-900/10 rounded-2xl border border-gray-100 dark:border-green-900/20">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center">
+                                        <i data-lucide="waves" class="w-6 h-6 text-amber-500"></i>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <p class="font-black text-sm">Single Touring Kayak</p>
+                                            <span class="bg-green-100 text-orange-600 text-[8px] font-black px-2 py-1 rounded-full uppercase">Completed</span>
+                                        </div>
+                                        <p class="text-[9px] text-gray-400 mt-1">Rental #TG-4015 · May 30, 2026 · Olympic Peninsula, WA</p>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[8px] font-bold">$45/day</span>
+                                            <span class="text-[8px] text-gray-400">•</span>
+                                            <span class="text-[8px] text-gray-400">2 days</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                                    <div class="text-right">
+                                        <p class="text-xs font-black">$90</p>
+                                        <div class="flex items-center gap-0.5 mt-1">
+                                            <i data-lucide="star" class="w-3 h-3 fill-yellow-400 text-yellow-400"></i>
+                                            <i data-lucide="star" class="w-3 h-3 fill-yellow-400 text-yellow-400"></i>
+                                            <i data-lucide="star" class="w-3 h-3 fill-yellow-400 text-yellow-400"></i>
+                                            <i data-lucide="star" class="w-3 h-3 fill-yellow-400 text-yellow-400"></i>
+                                            <i data-lucide="star" class="w-3 h-3 fill-yellow-400 text-yellow-400"></i>
+                                        </div>
+                                    </div>
+                                    <button class="p-2 bg-white dark:bg-green-900/20 rounded-lg border border-gray-200 dark:border-green-900/30">
+                                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <button class="text-primary text-[9px] font-black uppercase hover:underline">View All 9 Rentals →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 3. SAVED GEAR PAGE === -->
+            <div id="page-saved" class="page-node">
+                <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 rounded-2xl custom-shadow border border-gray-100 dark:border-green-900/30">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-black uppercase flex items-center gap-2">
+                                <i data-lucide="heart" class="w-5 h-5 text-primary fill-current"></i>
+                                Saved Gear
+                            </h3>
+                            <p class="text-[9px] sm:text-[10px] text-gray-400 mt-1">Your gear wishlist · 5 items</p>
+                        </div>
+                        <button class="w-full sm:w-auto bg-primary text-white text-[9px] font-black px-6 py-3 rounded-xl flex items-center justify-center gap-1">
+                            <i data-lucide="share-2" class="w-3 h-3"></i> Share Wishlist
+                        </button>
+                    </div>
+
+                    <!-- Gear Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                        <!-- Gear 1 -->
+                        <div class="gear-card bg-gray-50 dark:bg-green-900/10 rounded-2xl p-4 border border-gray-100 dark:border-green-900/20 hover:border-primary/30">
+                            <div class="relative">
+                                <div class="h-36 rounded-xl overflow-hidden bg-slate-100 dark:bg-green-900/20">
+                                    <img src="img/home2-8.jpg" alt="Camping Tent" class="w-full h-full object-cover">
+                                </div>
+                                <button class="absolute top-2 right-2 w-8 h-8 bg-white dark:bg-green-900/50 rounded-full flex items-center justify-center shadow-lg">
+                                    <i data-lucide="heart" class="w-4 h-4 text-red-500 fill-current"></i>
+                                </button>
+                                <span class="absolute top-2 left-2 bg-primary/90 text-white text-[8px] font-black px-2 py-1 rounded-full">$25/day</span>
+                            </div>
+                            <div class="mt-3">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-black text-sm">4-Person Tent</h4>
+                                    <div class="flex items-center gap-1">
+                                        <i data-lucide="star" class="w-3 h-3 fill-yellow-400 text-yellow-400"></i>
+                                        <span class="text-[10px] font-bold">4.9</span>
+                                    </div>
+                                </div>
+                                <p class="text-[9px] text-gray-400 mt-1">The North Face · Waterproof</p>
+                                <div class="flex items-center justify-between mt-3">
+                                    <span class="text-[8px] font-bold text-orange-600">Available now</span>
+                                    <button class="bg-primary/10 text-primary text-[8px] font-black px-3 py-1.5 rounded-full hover:bg-primary hover:text-white transition-colors">Rent Now</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gear 2 -->
+                        <div class="gear-card bg-gray-50 dark:bg-green-900/10 rounded-2xl p-4 border border-gray-100 dark:border-green-900/20 hover:border-primary/30">
+                            <div class="relative">
+                                <div class="h-36 rounded-xl overflow-hidden bg-slate-100 dark:bg-green-900/20">
+                                    <img src="img/home2-9.jpg" alt="Hiking Backpack" class="w-full h-full object-cover">
+                                </div>
+                                <button class="absolute top-2 right-2 w-8 h-8 bg-white dark:bg-green-900/50 rounded-full flex items-center justify-center shadow-lg">
+                                    <i data-lucide="heart" class="w-4 h-4 text-red-500 fill-current"></i>
+                                </button>
+                                <span class="absolute top-2 left-2 bg-primary/90 text-white text-[8px] font-black px-2 py-1 rounded-full">$15/day</span>
+                            </div>
+                            <div class="mt-3">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-black text-sm">Osprey 65L Backpack</h4>
+                                    <div class="flex items-center gap-1">
+                                        <i data-lucide="star" class="w-3 h-3 fill-yellow-400 text-yellow-400"></i>
+                                        <span class="text-[10px] font-bold">4.8</span>
+                                    </div>
+                                </div>
+                                <p class="text-[9px] text-gray-400 mt-1">Osprey Atmos AG · Anti-Gravity</p>
+                                <div class="flex items-center justify-between mt-3">
+                                    <span class="text-[8px] font-bold text-orange-600">Available now</span>
+                                    <button class="bg-primary/10 text-primary text-[8px] font-black px-3 py-1.5 rounded-full hover:bg-primary hover:text-white transition-colors">Rent Now</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gear 3 -->
+                        <div class="gear-card bg-gray-50 dark:bg-green-900/10 rounded-2xl p-4 border border-gray-100 dark:border-green-900/20 hover:border-primary/30">
+                            <div class="relative">
+                                <div class="h-36 rounded-xl overflow-hidden bg-slate-100 dark:bg-green-900/20">
+                                    <img src="img/home2-10.jpg" alt="Climbing Kit" class="w-full h-full object-cover">
+                                </div>
+                                <button class="absolute top-2 right-2 w-8 h-8 bg-white dark:bg-green-900/50 rounded-full flex items-center justify-center shadow-lg">
+                                    <i data-lucide="heart" class="w-4 h-4 text-red-500 fill-current"></i>
+                                </button>
+                                <span class="absolute top-2 left-2 bg-primary/90 text-white text-[8px] font-black px-2 py-1 rounded-full">$60/day</span>
+                            </div>
+                            <div class="mt-3">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-black text-sm">Full Climbing Bundle</h4>
+                                    <div class="flex items-center gap-1">
+                                        <i data-lucide="star" class="w-3 h-3 fill-yellow-400 text-yellow-400"></i>
+                                        <span class="text-[10px] font-bold">5.0</span>
+                                    </div>
+                                </div>
+                                <p class="text-[9px] text-gray-400 mt-1">Black Diamond · UIAA Certified</p>
+                                <div class="flex items-center justify-between mt-3">
+                                    <span class="text-[8px] font-bold text-amber-600">1 left in stock</span>
+                                    <button class="bg-primary/10 text-primary text-[8px] font-black px-3 py-1.5 rounded-full hover:bg-primary hover:text-white transition-colors">Rent Now</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <button class="text-primary text-[9px] font-black uppercase hover:underline">View All 5 Saved Items →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 4. MESSAGES PAGE === -->
+            <div id="page-messages" class="page-node">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    <!-- Conversations List -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white dark:bg-[#0f2318] rounded-2xl custom-shadow border border-gray-100 dark:border-green-900/30 overflow-hidden">
+                            <div class="p-4 border-b border-gray-100 dark:border-green-900/30">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-black uppercase flex items-center gap-2">
+                                        <i data-lucide="message-circle" class="w-4 h-4 text-primary"></i> Messages
+                                    </h3>
+                                    <span class="bg-primary text-white text-[8px] font-black px-2 py-1 rounded-full">2 New</span>
+                                </div>
+                                <div class="relative mt-3">
+                                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400"></i>
+                                    <input type="text" placeholder="Search messages..."
+                                           class="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-green-900/10 rounded-xl text-[10px] focus:outline-none focus:ring-1 focus:ring-primary/20 border border-gray-100 dark:border-green-900/20">
+                                </div>
+                            </div>
+
+                            <div class="divide-y divide-gray-100 dark:divide-green-900/20">
+                                <!-- Unread -->
+                                <div class="p-4 bg-primary/5 hover:bg-gray-50 dark:hover:bg-green-900/20 cursor-pointer transition-colors">
+                                    <div class="flex gap-3">
+                                        <div class="relative">
+                                            <div class="w-10 h-10 bg-[#ff8000]/20 rounded-full flex items-center justify-center text-[#ff8000] font-black text-sm flex-shrink-0">TG</div>
+                                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-orange-500 border-2 border-white dark:border-[#0f2318] rounded-full"></span>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center justify-between">
+                                                <p class="text-xs font-black">TrailGear Support</p>
+                                                <span class="text-[8px] text-gray-400">3 min ago</span>
+                                            </div>
+                                            <p class="text-[9px] font-bold text-gray-900 dark:text-white">Gear rental confirmed!</p>
+                                            <p class="text-[8px] text-gray-500 truncate mt-0.5">Your 4-Person Tent is ready for delivery to Yosemite...</p>
+                                            <span class="inline-block mt-1 bg-red-500 text-white text-[6px] font-black px-1.5 py-0.5 rounded-full">NEW</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Read -->
+                                <div class="p-4 hover:bg-gray-50 dark:hover:bg-green-900/20 cursor-pointer transition-colors">
+                                    <div class="flex gap-3">
+                                        <div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-500 font-black text-sm flex-shrink-0">AC</div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center justify-between">
+                                                <p class="text-xs font-black">Alex Carter (Guide)</p>
+                                                <span class="text-[8px] text-gray-400">Yesterday</span>
+                                            </div>
+                                            <p class="text-[9px] font-medium text-gray-600 dark:text-gray-400">Trip prep checklist</p>
+                                            <p class="text-[8px] text-gray-500 truncate mt-0.5">Here's what you need for the Yosemite summit...</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Read 2 -->
+                                <div class="p-4 hover:bg-gray-50 dark:hover:bg-green-900/20 cursor-pointer transition-colors">
+                                    <div class="flex gap-3">
+                                        <div class="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center text-purple-500 font-black text-sm flex-shrink-0">DR</div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center justify-between">
+                                                <p class="text-xs font-black">Daniel Ross (Guide)</p>
+                                                <span class="text-[8px] text-gray-400">2 days ago</span>
+                                            </div>
+                                            <p class="text-[9px] font-medium text-gray-600 dark:text-gray-400">Gear return confirmed</p>
+                                            <p class="text-[8px] text-gray-500 truncate mt-0.5">Your kayak was returned in excellent condition...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-4 border-t border-gray-100 dark:border-green-900/30">
+                                <button class="w-full text-primary text-[8px] font-black uppercase hover:underline">View All Messages</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Chat -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white dark:bg-[#0f2318] rounded-2xl custom-shadow border border-gray-100 dark:border-green-900/30 h-full flex flex-col">
+                            <!-- Chat Header -->
+                            <div class="p-4 border-b border-gray-100 dark:border-green-900/30 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-[#ff8000]/20 rounded-full flex items-center justify-center text-[#ff8000] font-black text-sm">TG</div>
+                                    <div>
+                                        <p class="text-sm font-black">TrailGear Support</p>
+                                        <p class="text-[8px] text-gray-400 flex items-center gap-1">
+                                            <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> Online · Replies in 5 min
+                                        </p>
+                                    </div>
+                                </div>
+                                <button class="p-2 hover:bg-gray-100 dark:hover:bg-green-900/20 rounded-lg">
+                                    <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+
+                            <!-- Chat Messages -->
+                            <div class="flex-1 p-4 space-y-4 overflow-y-auto max-h-[400px]">
+
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 bg-[#ff8000]/20 rounded-full flex items-center justify-center text-[#ff8000] font-black text-xs flex-shrink-0">TG</div>
+                                    <div>
+                                        <div class="bg-gray-100 dark:bg-green-900/20 rounded-2xl rounded-tl-none p-3 max-w-[300px]">
+                                            <p class="text-[10px]">Hi Jamie! Your 4-Person Camping Tent rental #TG-4021 is confirmed for Yosemite. 🏕️</p>
+                                        </div>
+                                        <span class="text-[6px] text-gray-400 mt-1 block">10:30 AM</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-3 justify-end">
+                                    <div>
+                                        <div class="bg-primary/10 rounded-2xl rounded-tr-none p-3 max-w-[300px]">
+                                            <p class="text-[10px]">Awesome! When will the gear be delivered to the trailhead?</p>
+                                        </div>
+                                        <span class="text-[6px] text-gray-400 mt-1 block text-right">10:32 AM</span>
+                                    </div>
+                                    <div class="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-black text-xs flex-shrink-0">JM</div>
+                                </div>
+
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 bg-[#ff8000]/20 rounded-full flex items-center justify-center text-[#ff8000] font-black text-xs flex-shrink-0">TG</div>
+                                    <div>
+                                        <div class="bg-gray-100 dark:bg-green-900/20 rounded-2xl rounded-tl-none p-3 max-w-[300px]">
+                                            <p class="text-[10px]">Delivery to Yosemite Valley Visitor Center by 8 AM on Jun 14. Your gear bag will be tagged #TG-4021. ✅</p>
+                                        </div>
+                                        <span class="text-[6px] text-gray-400 mt-1 block">10:35 AM</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-3 justify-end">
+                                    <div>
+                                        <div class="bg-primary/10 rounded-2xl rounded-tr-none p-3 max-w-[300px]">
+                                            <p class="text-[10px]">Perfect! Can I also add trekking poles to the order? 🥾</p>
+                                        </div>
+                                        <span class="text-[6px] text-gray-400 mt-1 block text-right">10:36 AM</span>
+                                    </div>
+                                    <div class="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-black text-xs flex-shrink-0">JM</div>
+                                </div>
+                            </div>
+
+                            <!-- Chat Input -->
+                            <div class="p-4 border-t border-gray-100 dark:border-green-900/30">
+                                <div class="flex items-center gap-2">
+                                    <button class="p-2 hover:bg-gray-100 dark:hover:bg-green-900/20 rounded-lg">
+                                        <i data-lucide="paperclip" class="w-4 h-4"></i>
+                                    </button>
+                                    <input type="text" placeholder="Type your message..."
+                                           class="flex-1 px-4 py-2 bg-gray-50 dark:bg-green-900/10 rounded-xl text-[10px] focus:outline-none focus:ring-1 focus:ring-primary/20 border border-gray-100 dark:border-green-900/20">
+                                    <button class="p-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                                        <i data-lucide="send" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 5. SETTINGS PAGE === -->
+            <div id="page-settings" class="page-node">
+                <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 rounded-2xl custom-shadow border border-gray-100 dark:border-green-900/30">
+                    <div class="flex items-center gap-2 mb-6">
+                        <i data-lucide="settings" class="w-6 h-6 text-primary"></i>
+                        <h3 class="text-lg sm:text-xl font-black uppercase">Account Settings</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Settings Menu -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-gray-50 dark:bg-green-900/10 rounded-xl p-2 border border-gray-100 dark:border-green-900/20">
+                                <button class="w-full flex items-center gap-3 p-3 rounded-lg bg-primary/10 text-primary">
+                                    <i data-lucide="user" class="w-4 h-4"></i>
+                                    <span class="text-xs font-bold">Profile Settings</span>
+                                </button>
+                                <button class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white dark:hover:bg-green-900/20 transition-colors">
+                                    <i data-lucide="bell" class="w-4 h-4"></i>
+                                    <span class="text-xs font-medium">Notifications</span>
+                                </button>
+                                <button class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white dark:hover:bg-green-900/20 transition-colors">
+                                    <i data-lucide="lock" class="w-4 h-4"></i>
+                                    <span class="text-xs font-medium">Privacy & Security</span>
+                                </button>
+                                <button class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white dark:hover:bg-green-900/20 transition-colors">
+                                    <i data-lucide="credit-card" class="w-4 h-4"></i>
+                                    <span class="text-xs font-medium">Payment Methods</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Settings Content -->
+                        <div class="lg:col-span-2 space-y-6">
+
+                            <!-- Personal Info -->
+                            <div>
+                                <h4 class="text-xs font-black uppercase mb-4 flex items-center gap-2">
+                                    <i data-lucide="user-check" class="w-4 h-4 text-primary"></i>
+                                    Personal Information
+                                </h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Full Name</label>
+                                        <input type="text" value="Jamie Morrison"
+                                               class="w-full mt-1 px-4 py-2.5 bg-gray-50 dark:bg-green-900/10 border border-gray-200 dark:border-green-900/30 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                    </div>
+                                    <div>
+                                        <label class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Email Address</label>
+                                        <input type="email" value="jamie.m@trailgear.com"
+                                               class="w-full mt-1 px-4 py-2.5 bg-gray-50 dark:bg-green-900/10 border border-gray-200 dark:border-green-900/30 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                    </div>
+                                    <div>
+                                        <label class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Phone Number</label>
+                                        <input type="tel" value="+1 (720) 555-8340"
+                                               class="w-full mt-1 px-4 py-2.5 bg-gray-50 dark:bg-green-900/10 border border-gray-200 dark:border-green-900/30 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                    </div>
+                                    <div>
+                                        <label class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Experience Level</label>
+                                        <select class="w-full mt-1 px-4 py-2.5 bg-gray-50 dark:bg-green-900/10 border border-gray-200 dark:border-green-900/30 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 dark:text-white">
+                                            <option>Intermediate Hiker</option>
+                                            <option>Beginner</option>
+                                            <option>Advanced</option>
+                                            <option>Expert / Professional</option>
+                                        </select>
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Home Address</label>
+                                        <input type="text" value="1247 Trail Ridge Rd, Denver, CO 80205"
+                                               class="w-full mt-1 px-4 py-2.5 bg-gray-50 dark:bg-green-900/10 border border-gray-200 dark:border-green-900/30 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notification Preferences -->
+                            <div>
+                                <h4 class="text-xs font-black uppercase mb-4 flex items-center gap-2">
+                                    <i data-lucide="bell" class="w-4 h-4 text-primary"></i>
+                                    Notification Preferences
+                                </h4>
+                                <div class="space-y-4 bg-gray-50 dark:bg-green-900/10 rounded-xl p-4 border border-gray-100 dark:border-green-900/20">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-xs font-bold">Email Notifications</p>
+                                            <p class="text-[8px] text-gray-400">Gear rental confirmations & reminders</p>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer" checked>
+                                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-xs font-bold">SMS Notifications</p>
+                                            <p class="text-[8px] text-gray-400">Delivery updates & return reminders</p>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer">
+                                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-xs font-bold">Push Notifications</p>
+                                            <p class="text-[8px] text-gray-400">New gear drops & special offers</p>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer" checked>
+                                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Save Buttons -->
+                            <div class="flex gap-3">
+                                <button class="bg-primary text-white text-[10px] font-black px-6 py-3 rounded-xl hover:bg-primary/90 transition-colors flex items-center gap-2">
+                                    <i data-lucide="save" class="w-3.5 h-3.5"></i> Save Changes
+                                </button>
+                                <button class="bg-gray-100 dark:bg-green-900/20 text-gray-600 dark:text-gray-300 text-[10px] font-black px-6 py-3 rounded-xl hover:bg-gray-200 dark:hover:bg-green-900/30 transition-colors">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-8 text-center text-[8px] sm:text-[9px] text-gray-400 uppercase tracking-wider">
+            <p>© 2026 TrailGear · Your Outdoor Adventure Partner</p>
+            <p class="mt-1 flex items-center justify-center gap-1"><i data-lucide="mountain" class="w-3 h-3"></i> Gear Up · Go Further · Explore Everything</p>
+        </footer>
+    </main>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('sidebarOverlay'); const menuIcon = document.getElementById('menuIcon');
+        sidebar.classList.toggle('-translate-x-full');
+        if (window.innerWidth < 1024) { if (overlay) overlay.classList.toggle('hidden'); }
+        if (menuIcon) { menuIcon.setAttribute('data-lucide', sidebar.classList.contains('-translate-x-full') ? 'menu' : 'x'); lucide.createIcons(); }
+    }
+
+    window.addEventListener('resize', function() {
+        const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('sidebarOverlay');
+        if (window.innerWidth >= 1024) { sidebar.classList.remove('-translate-x-full'); if (overlay) overlay.classList.add('hidden'); }
+        else { sidebar.classList.add('-translate-x-full'); if (overlay) overlay.classList.add('hidden'); }
+    });
+
+    function toggleDarkMode() {
+        const html = document.documentElement; html.classList.toggle('dark');
+        const icon = document.getElementById('themeIcon'); const isDark = html.classList.contains('dark');
+        icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon'); lucide.createIcons();
+        localStorage.setItem('darkMode', isDark ? 'dark' : 'light');
+    }
+    if (localStorage.getItem('darkMode') === 'dark') { document.documentElement.classList.add('dark'); document.getElementById('themeIcon')?.setAttribute('data-lucide', 'sun'); lucide.createIcons(); }
+
+    function toggleDirection() {
+        const html = document.getElementById('htmlTag'); const dirText = document.getElementById('dirText');
+        html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl'; dirText.innerText = html.dir.toUpperCase(); lucide.createIcons();
+    }
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page-node').forEach(p => p.classList.remove('active'));
+        const targetNode = document.getElementById('page-' + pageId);
+        if (targetNode) targetNode.classList.add('active');
+        const pageTitles = { 'profile': 'MY PROFILE', 'orders': 'RENTAL HISTORY', 'saved': 'SAVED GEAR', 'messages': 'MESSAGES', 'settings': 'SETTINGS' };
+        const titleElement = document.getElementById('pageTitle');
+        if (titleElement) titleElement.innerText = pageTitles[pageId] || pageId.toUpperCase();
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('sidebar-active'));
+        const activeBtn = document.getElementById('btn-' + pageId);
+        if (activeBtn) activeBtn.classList.add('sidebar-active');
+        if (window.innerWidth < 1024) toggleSidebar();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const overlay = document.createElement('div');
+        overlay.id = 'sidebarOverlay';
+        overlay.className = 'fixed inset-0 bg-black/50 z-40 hidden lg:hidden transition-opacity duration-300';
+        overlay.onclick = toggleSidebar;
+        document.body.appendChild(overlay);
+        showPage('profile'); lucide.createIcons();
+    });
+
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) { const now = Date.now(); if (now - lastTouchEnd <= 300) event.preventDefault(); lastTouchEnd = now; }, false);
+</script>
+</body>
+</html>

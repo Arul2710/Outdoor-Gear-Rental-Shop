@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>TrailGear | Outdoor Gear Rental Shop – Home 2</title>
+    <link rel="icon" type="image/png" href="img/fav icons.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; width: 100%; min-height: 100vh; transition: background-color 0.3s ease, color 0.3s ease; }
+
+        /* Dropdown */
+        .dropdown-content { display: none; opacity: 0; transform: translateY(10px); transition: opacity 0.2s ease, transform 0.2s ease; z-index: 1000; }
+        .dropdown-content.show { display: block; opacity: 1; transform: translateY(0); }
+
+        /* Mobile Menu */
+        #mobileMenu { transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); box-shadow: -10px 0 30px rgba(0,0,0,0.1); z-index: 1100; transform: translateX(100%); }
+        #mobileMenu.open { transform: translateX(0); }
+        .dark #mobileMenu { box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
+
+        /* Nav */
+        .nav-link { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 16px; border-radius: 8px; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px; color: black; white-space: nowrap; }
+        .dark .nav-link { color: #cbd5e1; }
+        .nav-link:hover { background-color: #ff8000; color: white !important; }
+        .nav-link.active { background-color: #ff8000; color: white !important; }
+
+        /* Mobile Nav */
+        .mobile-nav-link { font-size: 14px; font-weight: 600; padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; color: #1e293b; background: transparent; transition: all 0.3s ease; width: 100%; text-transform: uppercase; letter-spacing: 0.05em; border: none; cursor: pointer; }
+        .dark .mobile-nav-link { color: #e2e8f0; }
+        .mobile-nav-link:hover { background-color: #ff8000 !important; color: white !important; border-radius: 12px; }
+        .mobile-nav-link:hover i { color: white !important; transform: scale(1.1); }
+        .mobile-nav-link.active { background-color: #ff8000 !important; color: white !important; }
+
+        /* Mobile Submenu */
+        .mobile-submenu { display: none; flex-direction: column; padding-left: 1rem; margin-left: 0.5rem; border-left: 2px solid rgba(255, 128, 0,0.3); }
+        .mobile-submenu.open { display: flex; }
+        .mobile-submenu a { padding: 12px 16px; margin: 2px 0; border-radius: 8px; transition: all 0.2s ease; color: #1e293b; font-size: 14px; font-weight: 500; }
+        .dark .mobile-submenu a { color: #e2e8f0; }
+        .mobile-submenu .active-link { background-color: #ff8000 !important; color: white !important; }
+        .mobile-submenu a:hover { background-color: #ff8000 !important; color: white !important; }
+
+        button, a { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        @media (max-width: 640px) { button, a { min-height: 44px; } }
+        @media (max-width: 1279px) { .lg\:flex { display: none !important; } .xl\:flex { display: none !important; } .xl\:block { display: none !important; } .xl\:hidden { display: block !important; } }
+        @media (min-width: 1280px) { .xl\:flex { display: flex !important; } .xl\:block { display: block !important; } .xl\:hidden { display: none !important; } }
+
+        /* Hero image transition */
+        #heroGear { transition: opacity 0.6s ease, transform 0.6s ease; }
+
+        /* Deal card hover */
+        .deal-card { transition: all 0.3s ease; }
+        .deal-card:hover { transform: translateY(-6px); }
+
+        /* Input fix */
+        input[type="date"]::-webkit-calendar-picker-indicator { background: transparent; cursor: pointer; opacity: 0.6; filter: invert(0.5); }
+        .dark input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0 center; background-size: 12px; padding-right: 16px; }
+        .dark select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); }
+        @media (min-width: 360px) { .xs\:block { display: block; } }
+        @media (max-width: 640px) { input, select, button { min-height: 44px; } }
+    </style>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { primary: '#ff8000', darkBg: '#0f172a' } } }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-darkBg text-slate-900 dark:text-white overflow-x-hidden transition-colors duration-300">
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="fixed w-full z-[100] px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4">
+    <div class="max-w-[1400px] mx-auto flex items-center justify-between bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl px-4 sm:px-5 py-2 sm:py-3 rounded-xl sm:rounded-2xl border border-white/20 shadow-lg transition-all duration-300">
+
+        <!-- Logo -->
+        <div class="flex items-center gap-1 sm:gap-2">
+            <span class="text-xl sm:text-2xl md:text-3xl font-black tracking-tighter flex items-center gap-1 sm:gap-2 text-primary">
+                <i data-lucide="tent" class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"></i>
+                Trail<span class="text-black dark:text-white">Gear</span>
+            </span>
+        </div>
+
+        <!-- Desktop Nav -->
+        <div class="hidden lg:flex items-center gap-1 xl:gap-2">
+            <div class="relative">
+                <button onclick="toggleDropdown('homeMenu', event)" class="nav-link" id="homeDropdownBtn">
+                    Home <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                </button>
+                <div id="homeMenu" class="dropdown-content absolute top-full mt-2 w-40 bg-white dark:bg-slate-800 shadow-xl rounded-lg border border-slate-100 dark:border-slate-700 overflow-hidden">
+                    <a href="index.html" class="block px-4 py-2.5 text-xs font-bold hover:bg-orange-600 hover:text-white transition">Home 1</a>
+                    <a href="home2.html" class="block px-4 py-2.5 text-xs font-bold bg-orange-600 text-white">Home 2</a>
+                </div>
+            </div>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="book.html" class="nav-link">Rent Gear</a>
+            <a href="Services.html" class="nav-link">Services</a>
+            <a href="Gallery.html" class="nav-link">Gear &amp; Guides</a>
+            <a href="Contact.html" class="nav-link">Contact</a>
+            <div class="relative">
+                <button onclick="toggleDropdown('dashMenu', event)" class="nav-link" id="dashDropdownBtn">
+                    Dashboard <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                </button>
+                <div id="dashMenu" class="dropdown-content absolute top-full mt-2 w-44 bg-white dark:bg-slate-800 shadow-xl rounded-lg border border-slate-100 dark:border-slate-700 overflow-hidden">
+                    <a href="admin.html" class="flex items-center gap-2 px-4 py-2.5 text-xs font-bold hover:bg-orange-600 hover:text-white transition"><i data-lucide="user-cog" class="w-3.5 h-3.5"></i> Admin Dashboard</a>
+                    <a href="user.html" class="flex items-center gap-2 px-4 py-2.5 text-xs font-bold hover:bg-orange-600 hover:text-white transition"><i data-lucide="user" class="w-3.5 h-3.5"></i> User Dashboard</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Controls -->
+        <div class="flex items-center gap-1 sm:gap-2 md:gap-3">
+            <div class="hidden xl:flex items-center gap-2">
+                <button onclick="toggleDirection()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-300 dark:bg-slate-800 hover:bg-slate-500 dark:hover:bg-slate-700 transition text-xs font-bold dark:text-white">
+                    <span id="dirText">LTR</span>
+                </button>
+                <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-300 dark:bg-slate-800 hover:bg-slate-500 dark:hover:bg-slate-700 transition">
+                    <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-yellow-400"></i>
+                </button>
+            </div>
+            <div class="relative hidden xl:block">
+                <button onclick="toggleDropdown('userMenu', event)" class="p-2 sm:p-2.5 rounded-full bg-primary text-white hover:scale-105 transition shadow-md shadow-primary/30">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                </button>
+                <div id="userMenu" class="dropdown-content absolute right-0 top-full mt-2 w-36 bg-white dark:bg-slate-800 shadow-xl rounded-lg border border-slate-100 dark:border-slate-700 overflow-hidden">
+                    <a href="login.html" class="block px-4 py-2.5 text-xs font-bold hover:bg-orange-600 hover:text-white transition">LOGIN</a>
+                    <a href="signup.html" class="block px-4 py-2.5 text-xs font-bold hover:bg-orange-600 hover:text-white transition">SIGNUP</a>
+                </div>
+            </div>
+            <button onclick="toggleMobileMenu()" class="xl:hidden p-2 sm:p-2.5 text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div id="mobileMenu" class="fixed inset-y-0 right-0 w-[280px] sm:w-80 bg-white dark:bg-slate-900 z-[110] shadow-2xl p-5 sm:p-6 overflow-y-auto">
+    <div class="flex justify-between items-center mb-6 sm:mb-8">
+        <span class="text-xl font-black text-primary flex items-center gap-2"><i data-lucide="tent" class="w-5 h-5"></i>TrailGear</span>
+        <button onclick="toggleMobileMenu()" class="p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+    </div>
+    <div class="flex flex-col gap-1">
+        <button onclick="toggleMobileSubmenu('mobileHomeSub')" class="mobile-nav-link font-black" id="mobileHomeBtn">
+            <span>Home</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300"></i>
+        </button>
+        <div id="mobileHomeSub" class="mobile-submenu open">
+            <a href="index.html" class="block py-3 px-4 text-sm font-medium rounded-lg">Home 1</a>
+            <a href="home2.html" class="block py-3 px-4 text-sm font-medium rounded-lg active-link">Home 2</a>
+        </div>
+        <a href="about.html" class="mobile-nav-link">About</a>
+        <a href="book.html" class="mobile-nav-link">Rent Gear</a>
+        <a href="Services.html" class="mobile-nav-link">Services</a>
+        <a href="Gallery.html" class="mobile-nav-link">Gear &amp; Guides</a>
+        <a href="Contact.html" class="mobile-nav-link">Contact</a>
+        <button onclick="toggleMobileSubmenu('mobileDashSub')" class="mobile-nav-link">
+            <span>Dashboard</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300"></i>
+        </button>
+        <div id="mobileDashSub" class="mobile-submenu">
+            <a href="admin.html" class="flex items-center gap-2 py-3 px-4 text-sm font-medium"><i data-lucide="user-cog" class="w-3.5 h-3.5"></i> Admin Dashboard</a>
+            <a href="user.html" class="flex items-center gap-2 py-3 px-4 text-sm font-medium"><i data-lucide="user" class="w-3.5 h-3.5"></i> User Dashboard</a>
+        </div>
+        <hr class="my-4 border-slate-200 dark:border-slate-800">
+        <div class="space-y-4 px-2">
+            <div class="flex items-center justify-between text-sm font-bold">
+                <span>Layout Direction</span>
+                <button onclick="toggleDirection()" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <span id="mobileDirText">LTR</span>
+                </button>
+            </div>
+            <div class="flex items-center justify-between text-sm font-bold">
+                <span>Dark Mode</span>
+                <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-yellow-400"></i>
+                </button>
+            </div>
+        </div>
+        <hr class="my-4 border-slate-200 dark:border-slate-800">
+        <a href="login.html" class="mobile-nav-link font-black">LOGIN</a>
+        <a href="signup.html" class="mobile-nav-link font-black">SIGNUP</a>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+    function toggleDropdown(menuId, event) {
+        if (event) event.stopPropagation();
+        document.querySelectorAll('.dropdown-content').forEach(d => { if (d.id !== menuId) d.classList.remove('show'); });
+        const m = document.getElementById(menuId); if (m) m.classList.toggle('show');
+    }
+    window.addEventListener('click', function() { document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show')); });
+    document.addEventListener('click', function(e) { document.querySelectorAll('.dropdown-content').forEach(d => { if (d.contains(e.target)) e.stopPropagation(); }); });
+    function toggleMobileMenu() {
+        const m = document.getElementById('mobileMenu'); m.classList.toggle('open');
+        document.body.style.overflow = m.classList.contains('open') ? 'hidden' : 'auto';
+    }
+    window.addEventListener('resize', function() { const m = document.getElementById('mobileMenu'); if (m.classList.contains('open')) { m.classList.remove('open'); document.body.style.overflow = 'auto'; } });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { const m = document.getElementById('mobileMenu'); if (m.classList.contains('open')) { m.classList.remove('open'); document.body.style.overflow = 'auto'; } } });
+    document.addEventListener('click', function(e) {
+        const m = document.getElementById('mobileMenu'); const btn = document.querySelector('button[onclick="toggleMobileMenu()"]');
+        if (m.classList.contains('open') && !m.contains(e.target) && btn && !btn.contains(e.target)) { m.classList.remove('open'); document.body.style.overflow = 'auto'; }
+    });
+    function toggleMobileSubmenu(submenuId) {
+        const submenu = document.getElementById(submenuId); const button = submenu.previousElementSibling; const icon = button.querySelector('i[data-lucide="chevron-down"]');
+        document.querySelectorAll('.mobile-submenu').forEach(menu => {
+            if (menu.id !== submenuId && menu.classList.contains('open')) {
+                menu.classList.remove('open'); const btn = menu.previousElementSibling; const icn = btn.querySelector('i[data-lucide="chevron-down"]');
+                if (icn) { icn.style.transform = 'rotate(0deg)'; icn.style.color = ''; }
+            }
+        });
+        submenu.classList.toggle('open');
+        if (icon) icon.style.transform = submenu.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        setTimeout(() => lucide.createIcons(), 10);
+    }
+    function toggleTheme() {
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        setTimeout(() => lucide.createIcons(), 10);
+    }
+    if (localStorage.getItem('theme') === 'dark') { document.documentElement.classList.add('dark'); setTimeout(() => lucide.createIcons(), 10); }
+    else { document.documentElement.classList.remove('dark'); }
+    function toggleDirection() {
+        const html = document.documentElement; const dirText = document.getElementById('dirText'); const mobileDirText = document.getElementById('mobileDirText');
+        if (html.dir === 'rtl') { html.dir = 'ltr'; if(dirText) dirText.innerText = 'LTR'; if(mobileDirText) mobileDirText.innerText = 'LTR'; }
+        else { html.dir = 'rtl'; if(dirText) dirText.innerText = 'RTL'; if(mobileDirText) mobileDirText.innerText = 'RTL'; }
+        setTimeout(() => lucide.createIcons(), 10);
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        const dirText = document.getElementById('dirText'); const mobileDirText = document.getElementById('mobileDirText');
+        if (dirText) dirText.innerText = 'LTR'; if (mobileDirText) mobileDirText.innerText = 'LTR';
+        document.querySelectorAll('#mobileMenu a').forEach(link => { link.addEventListener('click', function() { document.getElementById('mobileMenu').classList.remove('open'); document.body.style.overflow = 'auto'; }); });
+    });
+</script>
+
+
+<!-- ===== HERO SECTION ===== -->
+<section class="relative min-h-screen bg-slate-100 dark:bg-slate-950 overflow-hidden flex flex-col justify-center pt-24 sm:pt-20 pb-8">
+    <!-- Decorative blobs -->
+    <div class="absolute inset-0 opacity-10 pointer-events-none">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-[#ff8000] rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-[#ff8000] rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="container mx-auto px-4 sm:px-6 md:px-12 relative z-10">
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-6">
+            
+            <!-- Left Text -->
+            <div class="w-full lg:w-1/2 text-left space-y-4 lg:space-y-5">
+                <div class="space-y-2">
+                    <p class="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-[#ff8000]" id="subHeader">Adventure Ready</p>
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tighter text-slate-900 dark:text-white" id="mainHeader">
+                        Gear Up for <br class="hidden xs:block"> The Wild
+                    </h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base max-w-sm font-medium" id="descHeader">
+                        Premium outdoor gear, delivered to your trailhead. Light pack, big adventure.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-2.5 sm:px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-[8px] sm:text-[9px] font-bold uppercase flex items-center gap-1.5 shadow-sm text-slate-700 dark:text-slate-300">
+                        <span class="w-1 h-1 bg-[#ff8000] rounded-full"></span> Instant Booking
+                    </span>
+                    <span class="px-2.5 sm:px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-[8px] sm:text-[9px] font-bold uppercase flex items-center gap-1.5 shadow-sm text-slate-700 dark:text-slate-300">
+                        <span class="w-1 h-1 bg-[#ff8000] rounded-full"></span> Doorstep Delivery
+                    </span>
+                    <span class="px-2.5 sm:px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-[8px] sm:text-[9px] font-bold uppercase flex items-center gap-1.5 shadow-sm text-slate-700 dark:text-slate-300">
+                        <span class="w-1 h-1 bg-[#ff8000] rounded-full"></span> Sanitized Gear
+                    </span>
+                </div>
+
+                <!-- Slide indicators -->
+                <div class="flex gap-2 pt-2">
+                    <div class="w-6 h-1 bg-[#ff8000] rounded-full transition-all duration-500 indicator"></div>
+                    <div class="w-2 h-1 bg-slate-300 dark:bg-slate-700 rounded-full transition-all duration-500 indicator"></div>
+                    <div class="w-2 h-1 bg-slate-300 dark:bg-slate-700 rounded-full transition-all duration-500 indicator"></div>
+                </div>
+            </div>
+
+            <!-- Right Hero Image -->
+            <div class="w-full lg:w-1/2 relative flex justify-center items-center">
+                <div class="relative w-full h-[200px] sm:h-[260px] md:h-[340px] lg:h-[400px] flex items-center justify-center">
+                    <img id="heroGear"
+                         src="img/home2-1.jpg"
+                         class="w-full h-full object-cover rounded-3xl shadow-2xl shadow-[#ff8000]/20"
+                         alt="Outdoor Adventure Gear">
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== BOOKING FORM ===== -->
+        <div class="mt-8 sm:mt-10 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl md:rounded-[2.5rem] shadow-2xl p-3 sm:p-4 md:p-5 max-w-6xl mx-auto border border-slate-100 dark:border-slate-800 transition-all duration-300">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+                
+                <!-- Column 1 -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 p-2.5 sm:p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <i data-lucide="user" class="w-4 h-4 text-[#ff8000] flex-shrink-0"></i>
+                        <input type="text" placeholder="Your Full Name" class="bg-transparent text-[10px] sm:text-xs font-bold outline-none w-full dark:text-white placeholder:text-slate-400">
+                    </div>
+                    <div class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <i data-lucide="map-pin" class="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#ff8000] flex-shrink-0"></i>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[8px] sm:text-[9px] text-slate-400 font-extrabold uppercase tracking-tighter">Destination / Park</p>
+                            <select class="bg-transparent text-[10px] sm:text-[11px] font-black outline-none w-full dark:text-white cursor-pointer appearance-none truncate">
+                                <option class="dark:bg-slate-900">Yosemite, CA</option>
+                                <option class="dark:bg-slate-900">Rocky Mountain, CO</option>
+                                <option class="dark:bg-slate-900">Zion Canyon, UT</option>
+                                <option class="dark:bg-slate-900">Grand Canyon, AZ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <i data-lucide="calendar" class="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#ff8000] flex-shrink-0"></i>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[8px] sm:text-[9px] text-slate-400 font-extrabold uppercase tracking-tighter">Pick-Up Date</p>
+                            <input type="date" class="bg-transparent text-[10px] sm:text-[11px] font-black outline-none w-full dark:text-white cursor-pointer">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <i data-lucide="tent" class="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#ff8000] flex-shrink-0"></i>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[8px] sm:text-[9px] text-slate-400 font-extrabold uppercase tracking-tighter">Gear Category</p>
+                            <select class="bg-transparent text-[10px] sm:text-[11px] font-black outline-none w-full dark:text-white cursor-pointer appearance-none truncate">
+                                <option class="dark:bg-slate-900">Camping Kit</option>
+                                <option class="dark:bg-slate-900">Hiking Gear</option>
+                                <option class="dark:bg-slate-900">Climbing Bundle</option>
+                                <option class="dark:bg-slate-900">Water Sports</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 3 -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <i data-lucide="calendar-check" class="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#ff8000] flex-shrink-0"></i>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[8px] sm:text-[9px] text-slate-400 font-extrabold uppercase tracking-tighter">Return Date</p>
+                            <input type="date" class="bg-transparent text-[10px] sm:text-[11px] font-black outline-none w-full dark:text-white cursor-pointer">
+                        </div>
+                    </div>
+                    <button class="w-full bg-[#ff8000] hover:bg-[#c2410c] text-white rounded-xl sm:rounded-2xl font-black text-base sm:text-lg uppercase tracking-[0.1em] transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 active:scale-95 group p-3 sm:p-3.5 md:p-4 h-[52px] sm:h-[58px] md:h-[64px]">
+                        <i data-lucide="search" class="w-4 sm:w-5 h-4 sm:h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="truncate">Find Your Gear</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Hero Slider Script -->
+<script>
+    const slides = [
+        {
+            sub: "Adventure Ready",
+            main: "Gear Up for <br> The Wild",
+            desc: "Premium outdoor gear, delivered to your trailhead. Light pack, big adventure.",
+            img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80"
+        },
+        {
+            sub: "Summit Season",
+            main: "Conquer Every <br> Mountain",
+            desc: "Professional climbing kits and trekking poles for your peak performance days.",
+            img: "https://images.unsplash.com/photo-1516592673884-4a382d1124c2?w=800&q=80"
+        },
+        {
+            sub: "Water Adventures",
+            main: "Paddle Into <br> The Blue",
+            desc: "Kayaks, canoes & water sport bundles ready for lakes, rivers, and coastlines.",
+            img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80"
+        }
+    ];
+
+    let current = 0;
+    const gearImg = document.getElementById('heroGear');
+    const mainH = document.getElementById('mainHeader');
+    const subH = document.getElementById('subHeader');
+    const descH = document.getElementById('descHeader');
+    const indicators = document.querySelectorAll('.indicator');
+
+    function updateSlider() {
+        gearImg.style.opacity = '0';
+        gearImg.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            current = (current + 1) % slides.length;
+            const s = slides[current];
+            gearImg.src = s.img;
+            subH.innerText = s.sub;
+            mainH.innerHTML = s.main;
+            descH.innerText = s.desc;
+            gearImg.style.opacity = '1';
+            gearImg.style.transform = 'translateY(0)';
+            indicators.forEach((dot, i) => {
+                if (i === current) {
+                    dot.classList.remove('w-2'); dot.classList.add('w-6');
+                    dot.classList.remove('bg-slate-300', 'dark:bg-slate-700'); dot.classList.add('bg-[#ff8000]');
+                } else {
+                    dot.classList.remove('w-6'); dot.classList.add('w-2');
+                    dot.classList.remove('bg-[#ff8000]'); dot.classList.add('bg-slate-300');
+                }
+            });
+        }, 600);
+    }
+    indicators.forEach((dot, i) => {
+        if (i === current) { dot.classList.remove('w-2'); dot.classList.add('w-6', 'bg-[#ff8000]'); }
+        else { dot.classList.add('bg-slate-300'); }
+    });
+    setInterval(updateSlider, 5000);
+    document.addEventListener('DOMContentLoaded', function() { if (typeof lucide !== 'undefined') lucide.createIcons(); });
+</script>
+
+
+<!-- ===== GEAR DEALS SECTION ===== -->
+<section class="py-16 bg-white dark:bg-slate-950 font-sans">
+    <div class="container mx-auto px-4 md:px-8 max-w-[1300px]">
+        
+        <div class="flex justify-between items-end mb-8">
+            <h2 class="text-2xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Hot Deals for Every Adventure
+            </h2>
+            <a href="Gallery.html" class="text-[#ff8000] font-bold text-sm hover:underline hidden sm:block">
+                See All Gear
+            </a>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+
+            <div class="deal-card group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-slate-100 dark:border-slate-800">
+                <div class="h-32 md:h-48 overflow-hidden relative">
+                    <img src="img/home2-1.jpg" alt="Camping Kit Deal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 left-3 bg-[#ff8000] text-white text-[9px] font-black px-2 py-1 rounded-full uppercase">30% OFF</span>
+                </div>
+                <div class="p-4 md:p-6">
+                    <h3 class="text-sm md:text-lg font-bold text-slate-900 dark:text-white mb-3 leading-tight">
+                        Members save up to 30% on full camping kits
+                    </h3>
+                    <a href="Gallery.html" class="inline-flex items-center gap-2 text-[#ff8000] text-[10px] md:text-sm font-black uppercase tracking-wider group/link">
+                        View Gear
+                        <i data-lucide="arrow-right" class="w-3 h-3 md:w-4 md:h-4 group-hover/link:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="deal-card group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-slate-100 dark:border-slate-800">
+                <div class="h-32 md:h-48 overflow-hidden relative">
+                    <img src="img/home2-2.jpg" alt="Hiking Deal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 left-3 bg-amber-500 text-white text-[9px] font-black px-2 py-1 rounded-full uppercase">Free Upgrade</span>
+                </div>
+                <div class="p-4 md:p-6">
+                    <h3 class="text-sm md:text-lg font-bold text-slate-900 dark:text-white mb-3 leading-tight">
+                        FREE boot upgrade on any 3-day hiking rental
+                    </h3>
+                    <a href="Gallery.html" class="inline-flex items-center gap-2 text-[#ff8000] text-[10px] md:text-sm font-black uppercase tracking-wider group/link">
+                        View Gear
+                        <i data-lucide="arrow-right" class="w-3 h-3 md:w-4 md:h-4 group-hover/link:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="deal-card group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-slate-100 dark:border-slate-800">
+                <div class="h-32 md:h-48 overflow-hidden relative">
+                    <img src="img/home2-3.jpg" alt="Winter Gear" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 left-3 bg-blue-600 text-white text-[9px] font-black px-2 py-1 rounded-full uppercase">Save 20%</span>
+                </div>
+                <div class="p-4 md:p-6">
+                    <h3 class="text-sm md:text-lg font-bold text-slate-900 dark:text-white mb-3 leading-tight">
+                        Save up to 20% when you pay in advance
+                    </h3>
+                    <a href="Gallery.html" class="inline-flex items-center gap-2 text-[#ff8000] text-[10px] md:text-sm font-black uppercase tracking-wider group/link">
+                        View Gear
+                        <i data-lucide="arrow-right" class="w-3 h-3 md:w-4 md:h-4 group-hover/link:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="deal-card group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-slate-100 dark:border-slate-800">
+                <div class="h-32 md:h-48 overflow-hidden relative">
+                    <img src="img/home2-4.jpg" alt="Weekly Deal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 left-3 bg-[#ff8000] text-white text-[9px] font-black px-2 py-1 rounded-full uppercase">+1 Free Day</span>
+                </div>
+                <div class="p-4 md:p-6">
+                    <h3 class="text-sm md:text-lg font-bold text-slate-900 dark:text-white mb-3 leading-tight">
+                        Rent for 6 days and get the 7th day absolutely free
+                    </h3>
+                    <a href="Gallery.html" class="inline-flex items-center gap-2 text-[#ff8000] text-[10px] md:text-sm font-black uppercase tracking-wider group/link">
+                        View Gear
+                        <i data-lucide="arrow-right" class="w-3 h-3 md:w-4 md:h-4 group-hover/link:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-8 text-center sm:hidden">
+            <a href="Gallery.html" class="inline-block px-6 py-3 bg-[#ff8000] text-white rounded-full font-bold text-xs uppercase tracking-widest shadow-lg shadow-[#ff8000]/20">
+                See All Offers
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>if (typeof lucide !== 'undefined') { lucide.createIcons(); }</script>
+
+
+<!-- ===== GROUP / CORPORATE ADVENTURE SECTION ===== -->
+<section class="py-20 bg-white dark:bg-slate-950 font-sans overflow-hidden">
+    <div class="container mx-auto px-4 md:px-8 max-w-[1200px]">
+        
+        <!-- Left image + Right text -->
+        <div class="flex flex-col lg:flex-row items-center gap-12 mb-24">
+            <div class="w-full lg:w-1/2 relative">
+                <div class="rounded-[3rem] overflow-hidden shadow-2xl border-8 border-slate-50 dark:border-slate-900">
+                    <img src="img/home2-2.jpg"
+                         alt="Group Adventure" class="w-full h-[400px] object-cover hover:scale-105 transition-transform duration-700">
+                </div>
+                <!-- Floating badge -->
+                <div class="absolute -bottom-5 -right-5 bg-[#ff8000] text-white rounded-2xl px-5 py-3 shadow-xl shadow-[#ff8000]/30 hidden md:block">
+                    <p class="text-xs font-black uppercase tracking-widest">Group Packages</p>
+                    <p class="text-2xl font-black">From $99</p>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/2 space-y-6">
+                <h2 class="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">
+                    Group <span class="text-[#ff8000]">Adventure Kits</span>
+                </h2>
+                <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300">
+                    A complete gear package built for your whole crew.
+                </h3>
+                <p class="text-slate-500 dark:text-slate-400 leading-relaxed">
+                    TrailGear offers curated group adventure bundles for corporate retreats, school trips, family expeditions, and guided tours. Everything from tents to trekking poles — we outfit your entire team with inspected, premium-grade equipment at bundled prices.
+                </p>
+                <button class="bg-[#ff8000] text-white px-10 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#c2410c] hover:-translate-y-1 transition-all shadow-lg shadow-[#ff8000]/20">
+                    Explore Group Packages
+                </button>
+            </div>
+        </div>
+
+        <!-- Partner Brands / Gear Brands We Carry -->
+        <div class="w-full bg-white dark:bg-slate-950 py-16">
+            <div class="text-center">
+                <h2 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mb-12 tracking-tight">
+                    Gear Brands We <span class="text-[#ff8000]">Carry</span>
+                </h2>
+                <div class="relative flex justify-center items-center bg-white dark:bg-slate-900 py-12 border-y border-gray-100 dark:border-white/5 overflow-hidden rounded-3xl">
+                    <div class="container mx-auto px-4">
+                        <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 lg:gap-20">
+                            
+                            <!-- Brand logos as styled text badges (since external logos may not load) -->
+                            <div class="flex items-center justify-center transform transition-all duration-300 hover:scale-110">
+                                <span class="text-xl md:text-2xl font-black text-slate-700 dark:text-slate-300 tracking-tight hover:text-[#ff8000] transition-colors">THE NORTH FACE</span>
+                            </div>
+                            <div class="flex items-center justify-center transform transition-all duration-300 hover:scale-110">
+                                <span class="text-xl md:text-2xl font-black text-slate-700 dark:text-slate-300 tracking-tight hover:text-[#ff8000] transition-colors">OSPREY</span>
+                            </div>
+                            <div class="flex items-center justify-center transform transition-all duration-300 hover:scale-110">
+                                <span class="text-xl md:text-2xl font-black text-slate-700 dark:text-slate-300 tracking-tight hover:text-[#ff8000] transition-colors">BLACK DIAMOND</span>
+                            </div>
+                            <div class="flex items-center justify-center transform transition-all duration-300 hover:scale-110">
+                                <span class="text-xl md:text-2xl font-black text-slate-700 dark:text-slate-300 tracking-tight hover:text-[#ff8000] transition-colors">MSR</span>
+                            </div>
+                            <div class="flex items-center justify-center transform transition-all duration-300 hover:scale-110">
+                                <span class="text-xl md:text-2xl font-black text-slate-700 dark:text-slate-300 tracking-tight hover:text-[#ff8000] transition-colors">PATAGONIA</span>
+                            </div>
+                            <div class="flex items-center justify-center transform transition-all duration-300 hover:scale-110">
+                                <span class="text-xl md:text-2xl font-black text-slate-700 dark:text-slate-300 tracking-tight hover:text-[#ff8000] transition-colors">REI Co-op</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ===== GEAR TYPES SECTION ===== -->
+<section class="py-16 bg-slate-50 dark:bg-slate-950 font-sans">
+    <div class="container mx-auto px-4 md:px-8 max-w-[1300px]">
+        
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tighter">
+                Gear Types <span class="text-[#ff8000]">for Every Adventure</span>
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium">
+                Whether it's a mountain summit, a forest trail, a river rapid, or a night under the stars — we have the perfect kit for your mission.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+
+            <!-- Camping -->
+            <div class="group relative bg-white dark:bg-slate-900 rounded-[2rem] p-6 md:p-8 border border-slate-100 dark:border-slate-800 transition-all duration-500 hover:bg-[#ff8000] shadow-lg hover:shadow-2xl overflow-hidden">
+                <div class="relative z-10 transition-colors duration-500">
+                    <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white group-hover:text-white mb-2">Camping</h3>
+                    <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 group-hover:text-white/90 leading-relaxed mb-8">
+                        Tents, sleeping bags, lanterns & stoves. Sleep under the stars in comfort.
+                    </p>
+                    <div class="flex items-center gap-2 group-hover:translate-x-2 transition-transform duration-300">
+                        <div class="w-8 h-[2px] bg-[#ff8000] group-hover:bg-white"></div>
+                        <i data-lucide="arrow-right" class="w-4 h-4 text-[#ff8000] group-hover:text-white"></i>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-center">
+                    <img src="img/home2-3.jpg"
+                         alt="Camping" class="w-full h-32 object-cover rounded-2xl drop-shadow-xl group-hover:scale-110 transition-transform duration-500">
+                </div>
+            </div>
+
+            <!-- Hiking -->
+            <div class="group relative bg-white dark:bg-slate-900 rounded-[2rem] p-6 md:p-8 border border-slate-100 dark:border-slate-800 transition-all duration-500 hover:bg-[#ff8000] shadow-lg hover:shadow-2xl overflow-hidden">
+                <div class="relative z-10 transition-colors duration-500">
+                    <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white group-hover:text-white mb-2">Hiking</h3>
+                    <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 group-hover:text-white/90 leading-relaxed mb-8">
+                        Backpacks, boots, trekking poles & GPS. Hit any trail with confidence.
+                    </p>
+                    <div class="flex items-center gap-2 group-hover:translate-x-2 transition-transform duration-300">
+                        <div class="w-8 h-[2px] bg-[#ff8000] group-hover:bg-white"></div>
+                        <i data-lucide="arrow-right" class="w-4 h-4 text-[#ff8000] group-hover:text-white"></i>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-center">
+                    <img src="img/home2-4.jpg"
+                         alt="Hiking" class="w-full h-32 object-cover rounded-2xl drop-shadow-xl group-hover:scale-110 transition-transform duration-500">
+                </div>
+            </div>
+
+            <!-- Climbing -->
+            <div class="group relative bg-white dark:bg-slate-900 rounded-[2rem] p-6 md:p-8 border border-slate-100 dark:border-slate-800 transition-all duration-500 hover:bg-[#ff8000] shadow-lg hover:shadow-2xl overflow-hidden">
+                <div class="relative z-10 transition-colors duration-500">
+                    <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white group-hover:text-white mb-2">Climbing</h3>
+                    <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 group-hover:text-white/90 leading-relaxed mb-8">
+                        Harnesses, ropes, carabiners & helmets. Safety-certified for every ascent.
+                    </p>
+                    <div class="flex items-center gap-2 group-hover:translate-x-2 transition-transform duration-300">
+                        <div class="w-8 h-[2px] bg-[#ff8000] group-hover:bg-white"></div>
+                        <i data-lucide="arrow-right" class="w-4 h-4 text-[#ff8000] group-hover:text-white"></i>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-center">
+                    <img src="img/home2-5.jpg"
+                         alt="Climbing" class="w-full h-32 object-cover rounded-2xl drop-shadow-xl group-hover:scale-110 transition-transform duration-500">
+                </div>
+            </div>
+
+            <!-- Water Sports -->
+            <div class="group relative bg-white dark:bg-slate-900 rounded-[2rem] p-6 md:p-8 border border-slate-100 dark:border-slate-800 transition-all duration-500 hover:bg-[#ff8000] shadow-lg hover:shadow-2xl overflow-hidden">
+                <div class="relative z-10 transition-colors duration-500">
+                    <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white group-hover:text-white mb-2">Water Sports</h3>
+                    <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 group-hover:text-white/90 leading-relaxed mb-8">
+                        Kayaks, canoes, paddleboards & life vests. Rule the water your way.
+                    </p>
+                    <div class="flex items-center gap-2 group-hover:translate-x-2 transition-transform duration-300">
+                        <div class="w-8 h-[2px] bg-[#ff8000] group-hover:bg-white"></div>
+                        <i data-lucide="arrow-right" class="w-4 h-4 text-[#ff8000] group-hover:text-white"></i>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-center">
+                    <img src="img/home2-6.jpg"
+                         alt="Water Sports" class="w-full h-32 object-cover rounded-2xl drop-shadow-xl group-hover:scale-110 transition-transform duration-500">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>if (typeof lucide !== 'undefined') { lucide.createIcons(); }</script>
+
+
+<!-- ===== FOOTER ===== -->
+<footer class="bg-[#0f172a] dark:bg-gray-900 text-white pt-16 pb-8 font-sans overflow-hidden">
+    <div class="container mx-auto px-4 md:px-8 max-w-[1300px]">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl md:text-3xl font-black tracking-tighter flex items-center gap-2 text-[#fb923c]">
+                        <i data-lucide="tent" class="w-7 h-7 md:w-8 md:h-8"></i>
+                        Trail<span class="text-white">Gear</span>
+                    </span>
+                </div>
+                <p class="text-white/70 dark:text-gray-400 text-sm leading-relaxed">
+                    Premium outdoor gear rental services across major national parks and adventure destinations. We equip adventurers for extraordinary experiences.
+                </p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ff8000] transition-all"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ff8000] transition-all"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ff8000] transition-all"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <h4 class="text-lg font-black uppercase tracking-widest text-white">Company</h4>
+                <ul class="space-y-3 text-white/70 dark:text-gray-400 text-sm">
+                    <li><a href="index.html" class="hover:text-[#fb923c] transition-colors">Home</a></li>
+                    <li><a href="about.html" class="hover:text-[#fb923c] transition-colors">About</a></li>
+                    <li><a href="Services.html" class="hover:text-[#fb923c] transition-colors">Services</a></li>
+                    <li><a href="Gallery.html" class="hover:text-[#fb923c] transition-colors">Gear &amp; Guides</a></li>
+                    <li><a href="Contact.html" class="hover:text-[#fb923c] transition-colors">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="space-y-6">
+                <h4 class="text-lg font-black uppercase tracking-widest text-white">Destinations</h4>
+                <ul class="space-y-3 text-white/70 dark:text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-[#fb923c] transition-colors">Yosemite, CA</a></li>
+                    <li><a href="#" class="hover:text-[#fb923c] transition-colors">Rocky Mountain, CO</a></li>
+                    <li><a href="#" class="hover:text-[#fb923c] transition-colors">Zion Canyon, UT</a></li>
+                    <li><a href="#" class="hover:text-[#fb923c] transition-colors">Grand Canyon, AZ</a></li>
+                    <li><a href="#" class="hover:text-[#fb923c] transition-colors">Olympic Peninsula, WA</a></li>
+                </ul>
+            </div>
+
+            <div class="space-y-6">
+                <h4 class="text-lg font-black uppercase tracking-widest text-white">Get in Touch</h4>
+                <ul class="space-y-4 text-white text-sm">
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-[#fb923c]"></i>
+                        <span class="text-white/70">456 Trail Blvd,<br>Denver, CO 80202</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i data-lucide="phone" class="w-5 h-5 text-[#fb923c]"></i>
+                        <span class="text-white/70">+1 (800) 874-2559</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i data-lucide="mail" class="w-5 h-5 text-[#fb923c]"></i>
+                        <span class="text-white/70">hello@trailgear.com</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="pt-8 border-t border-white/20 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-4 text-[12px] font-bold text-white/60 dark:text-gray-500">
+            <p>© 2026 TrailGear Outdoor Rentals. All Rights Reserved.</p>
+            <div class="flex gap-6 uppercase tracking-widest">
+                <a href="#" class="hover:text-[#fb923c]">Sitemap</a>
+                <a href="#" class="hover:text-[#fb923c]">Refund Policy</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+    document.addEventListener('DOMContentLoaded', function() { lucide.createIcons(); });
+</script>
+
+</body>
+</html>

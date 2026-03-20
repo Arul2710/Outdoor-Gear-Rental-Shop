@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlTag" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>TrailGear – Sign Up | Outdoor Adventure Equipment</title>
+    <link rel="icon" type="image/png" href="img/fav icons.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800;9..40,900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ff8000',  // Green color
+                    },
+                    fontFamily: {
+                        inter:     ['Inter','sans-serif'],
+                        cormorant: ['Cormorant Garamond','serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root { 
+            --primary: #ff8000; 
+        }
+
+        * { 
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        body { 
+            background: #F8F9FD;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 12px;
+        }
+        
+        .dark body {
+            background: #0F172A;
+        }
+
+        /* Logo */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .logo:hover{transform:scale(1.05);}
+        
+        .action-btn {
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(255, 128, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            color: #ff8000;
+            transition: all 0.3s ease;
+            min-width: 36px;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .dark .action-btn {
+            background: #1E293B;
+            border-color: #374151;
+            color: #ff8000;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 128, 0, 0.2);
+        }
+
+        /* Icon visibility for dark mode */
+        .dark .dark\:hidden {
+            display: none;
+        }
+        
+        .dark .hidden.dark\:block {
+            display: block;
+        }
+        
+        .dark\:block {
+            display: none;
+        }
+        
+        .dark .dark\:block {
+            display: block;
+        }
+        
+        .dark .dark\:hidden {
+            display: none;
+        }
+
+        /* Fix for Font Awesome icons */
+        .fab, .fas, .far {
+            font-family: 'Font Awesome 6 Brands' !important;
+            font-weight: 400;
+        }
+        
+        .fas {
+            font-family: 'Font Awesome 6 Free' !important;
+            font-weight: 900;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br font-inter from-primary/10 to-primary/5 dark:from-[#0F172A] dark:to-[#1E293B]">
+    
+    <!-- Top Right Controls -->
+    <div class="fixed top-3 right-3 sm:top-4 sm:right-4 md:top-5 md:right-5 z-50">
+        <div class="desktop-menu flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-1.5 rounded-xl shadow-lg border border-primary/20 dark:border-gray-700">
+            <button onclick="toggleDirection()" class="action-btn" title="Toggle Direction">
+                <i class="fas fa-arrows-left-right"></i>
+            </button>
+            <button onclick="toggleTheme()" class="action-btn" title="Toggle Theme">
+                <i class="fas fa-moon dark:hidden"></i>
+                <i class="fas fa-sun hidden dark:block"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sign Up Card -->
+    <div class="w-full max-w-[90%] sm:max-w-[380px] md:max-w-[400px] lg:max-w-[420px] mx-auto">
+        <div class="bg-white dark:bg-[#1E293B] rounded-xl sm:rounded-2xl shadow-xl border border-primary/20 dark:border-gray-700 p-5 sm:p-6 md:p-7">
+            
+            <!-- Logo - Updated with TrailGear -->
+            <div class="flex justify-center mb-6 sm:mb-7 md:mb-8">
+                <a href="index.html" class="flex items-center gap-1 sm:gap-2">
+                    <span class="text-xl sm:text-2xl md:text-3xl font-black tracking-tighter flex items-center gap-1 sm:gap-2 text-primary">
+                        <i data-lucide="tent" class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"></i>
+                        Trail<span class="text-black dark:text-white">Gear</span>
+                    </span>
+                </a>
+            </div>
+            
+            <!-- Title -->
+            <h1 class="text-xl sm:text-xl md:text-2xl font-black text-center text-gray-900 dark:text-white mb-2">
+                Create <span class="text-primary dark:text-primary">Account</span>
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="text-center text-[10px] sm:text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-5 sm:mb-6 md:mb-7">
+                Join us to start your outdoor adventure
+            </p>
+            
+            <!-- Form -->
+            <form class="space-y-4 sm:space-y-5">
+                <!-- Full Name Field -->
+                <div>
+                    <label class="text-[9px] sm:text-[10px] md:text-xs font-black text-primary uppercase tracking-wider block mb-1 ml-1">
+                        <i class="fas fa-user mr-1 text-xs"></i>
+                        Full Name
+                    </label>
+                    <input type="text" placeholder="Enter your full name" 
+                           class="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-primary/5 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs sm:text-sm focus:border-primary focus:outline-none transition-all placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20">
+                </div>
+
+                <!-- Email Field -->
+                <div>
+                    <label class="text-[9px] sm:text-[10px] md:text-xs font-black text-primary uppercase tracking-wider block mb-1 ml-1">
+                        <i class="fas fa-envelope mr-1 text-xs"></i>
+                        Email Address
+                    </label>
+                    <input type="email" placeholder="Enter your email" 
+                           class="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-primary/5 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs sm:text-sm focus:border-primary focus:outline-none transition-all placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20">
+                </div>
+                
+                <!-- Password Field -->
+                <div>
+                    <label class="text-[9px] sm:text-[10px] md:text-xs font-black text-primary uppercase tracking-wider block mb-1 ml-1">
+                        <i class="fas fa-lock mr-1 text-xs"></i>
+                        Password
+                    </label>
+                    <div class="relative">
+                        <input type="password" id="password" placeholder="Create a password" 
+                               class="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-primary/5 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs sm:text-sm focus:border-primary focus:outline-none transition-all pr-9 sm:pr-10 placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20">
+                        <button type="button" onclick="togglePassword()" class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary">
+                            <i id="passwordIcon" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div>
+                    <label class="text-[9px] sm:text-[10px] md:text-xs font-black text-primary uppercase tracking-wider block mb-1 ml-1">
+                        <i class="fas fa-lock mr-1 text-xs"></i>
+                        Confirm Password
+                    </label>
+                    <div class="relative">
+                        <input type="password" id="confirmPassword" placeholder="Confirm your password" 
+                               class="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-primary/5 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs sm:text-sm focus:border-primary focus:outline-none transition-all pr-9 sm:pr-10 placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20">
+                        <button type="button" onclick="toggleConfirmPassword()" class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary">
+                            <i id="confirmPasswordIcon" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Terms & Conditions -->
+                <div class="flex items-start gap-2">
+                    <input type="checkbox" class="accent-primary w-3.5 h-3.5 sm:w-4 sm:h-4 rounded mt-0.5">
+                    <span class="text-[9px] sm:text-[10px] md:text-xs text-gray-600 dark:text-gray-400">
+                        I agree to the 
+                        <a href="#" class="text-primary font-bold hover:underline">Terms</a> 
+                        and 
+                        <a href="#" class="text-primary font-bold hover:underline">Privacy Policy</a>
+                    </span>
+                </div>
+                
+                <!-- Sign Up Button - Updated with white text -->
+                <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2.5 sm:py-3 md:py-3.5 px-4 rounded-lg transition-all shadow-md text-xs sm:text-sm md:text-base mt-2 transform hover:scale-[1.02]">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    Sign Up
+                </button>
+            </form>
+            
+            <!-- Divider -->
+            <div class="relative my-5 sm:my-6">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                </div>
+                <div class="relative flex justify-center text-[9px] sm:text-[10px] md:text-xs">
+                    <span class="bg-white dark:bg-[#1E293B] px-3 text-gray-500">or sign up with</span>
+                </div>
+            </div>
+            
+            <!-- Social Icons - Updated hover colors to primary -->
+            <div class="grid grid-cols-3 gap-2 sm:gap-3 mb-5 sm:mb-6">
+                <button class="flex items-center justify-center gap-1 sm:gap-2 p-2 sm:p-2.5 md:p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary hover:text-primary transition-all group">
+                    <i class="fab fa-google text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400 group-hover:text-primary"></i>
+                    <span class="text-[9px] sm:text-[10px] md:text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-primary">Google</span>
+                </button>
+                <button class="flex items-center justify-center gap-1 sm:gap-2 p-2 sm:p-2.5 md:p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary hover:text-primary transition-all group">
+                    <i class="fab fa-apple text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400 group-hover:text-primary"></i>
+                    <span class="text-[9px] sm:text-[10px] md:text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-primary">Apple</span>
+                </button>
+                <button class="flex items-center justify-center gap-1 sm:gap-2 p-2 sm:p-2.5 md:p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary hover:text-primary transition-all group">
+                    <i class="fab fa-facebook-f text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400 group-hover:text-primary"></i>
+                    <span class="text-[9px] sm:text-[10px] md:text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-primary">Facebook</span>
+                </button>
+            </div>
+            
+            <!-- Login Link -->
+            <p class="text-center text-[10px] sm:text-xs md:text-sm text-gray-500 dark:text-gray-400">
+                Already have an account? 
+                <a href="login.html" class="text-primary font-bold hover:underline hover:scale-105 inline-block transition-all">
+                    Sign in
+                </a>
+            </p>
+
+            <!-- Footer -->
+            <p class="text-center text-[8px] sm:text-[9px] md:text-xs text-gray-400 dark:text-gray-500 mt-4 sm:mt-5">
+                © 2024 TrailGear. All rights reserved.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Theme Toggle Function
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            localStorage.setItem('darkMode', html.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        // Check saved dark mode
+        if (localStorage.getItem('darkMode') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Direction Toggle
+        function toggleDirection() {
+            const html = document.getElementById('htmlTag');
+            html.dir = html.dir === 'ltr' ? 'rtl' : 'ltr';
+        }
+
+        // Password Visibility Toggle
+        function togglePassword() {
+            const password = document.getElementById('password');
+            const icon = document.getElementById('passwordIcon');
+            
+            if (password.type === 'password') {
+                password.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                password.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Confirm Password Visibility Toggle
+        function toggleConfirmPassword() {
+            const confirmPassword = document.getElementById('confirmPassword');
+            const icon = document.getElementById('confirmPasswordIcon');
+            
+            if (confirmPassword.type === 'password') {
+                confirmPassword.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                confirmPassword.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Any initialization code
+        });
+    </script>
+</body>
+</html>

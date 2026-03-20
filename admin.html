@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlTag" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>TrailGear Admin | Outdoor Gear Rental Management</title>
+    <link rel="icon" type="image/png" href="img/fav icons.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { primary: '#ff8000' },
+                    screens: { 'xs': '475px', 'sm': '640px', 'md': '768px', 'lg': '1024px', 'xl': '1280px' }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        * { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; width: 100%; }
+
+        .sidebar-active { background: rgba(255, 128, 0, 0.1); border-left: 4px solid #ff8000; color: #ff8000 !important; font-weight: 700; }
+        [dir="rtl"] .sidebar-active { border-left: 0; border-right: 4px solid #ff8000; }
+
+        .custom-shadow { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+        .dark .custom-shadow { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
+
+        .page-node { display: none; opacity: 0; transform: translateY(10px); }
+        .page-node.active { display: block; animation: fadeInUp 0.4s ease forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 1023px) { #sidebar { width: 280px; box-shadow: 0 0 30px rgba(0,0,0,0.15); } .dark #sidebar { box-shadow: 0 0 30px rgba(0,0,0,0.5); } }
+        button, a { min-height: 44px; min-width: 44px; cursor: pointer; }
+        @media (max-width: 640px) { table { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; } .card-grid { display: flex; flex-direction: column; } }
+        .notification-item:hover { background-color: rgba(255, 128, 0, 0.05); }
+    </style>
+</head>
+<body class="bg-[#F0FDF4] dark:bg-[#0f172a] text-gray-900 dark:text-gray-100 antialiased">
+
+<!-- Mobile Overlay -->
+<div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden transition-opacity duration-300"></div>
+
+<div class="flex min-h-screen relative w-full overflow-x-hidden">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-[280px] bg-white dark:bg-[#0f2318] text-gray-500 dark:text-gray-400 transition-all duration-300 ease-in-out lg:translate-x-0 -translate-x-full border-r border-gray-100 dark:border-green-900/30 overflow-y-auto">
+        <div class="p-5 h-full flex flex-col">
+
+            <!-- Logo -->
+            <div class="flex items-center justify-between mb-8">
+                <a href="index.html" class="text-xl sm:text-2xl font-black tracking-tighter flex items-center gap-2 text-primary">
+                    <i data-lucide="tent" class="w-6 h-6 md:w-7 md:h-7"></i>
+                    Trail<span class="text-black dark:text-white">Gear</span>
+                </a>
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-green-900/30 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 space-y-1 overflow-y-auto">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 ml-2">
+                    <i data-lucide="layout-grid" class="w-3 h-3 inline mr-1"></i> MAIN MENU
+                </p>
+
+                <a href="javascript:void(0)" onclick="showPage('stats')" id="btn-stats" class="nav-btn flex items-center gap-3 p-3.5 rounded-xl sidebar-active transition-all hover:bg-gray-50 dark:hover:bg-green-900/20 group">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+
+                <a href="javascript:void(0)" onclick="showPage('content')" id="btn-content" class="nav-btn flex items-center gap-3 p-3.5 rounded-xl hover:bg-gray-50 dark:hover:bg-green-900/20 transition-all group">
+                    <i data-lucide="package" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">Gear Inventory</span>
+                </a>
+
+                <a href="javascript:void(0)" onclick="showPage('bookings')" id="btn-bookings" class="nav-btn flex items-center gap-3 p-3.5 rounded-xl hover:bg-gray-50 dark:hover:bg-green-900/20 transition-all group">
+                    <i data-lucide="calendar-check" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">Rental Bookings</span>
+                </a>
+
+                <div class="mt-6 pt-6 border-t border-gray-100 dark:border-green-900/30">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 ml-2">
+                        <i data-lucide="settings" class="w-3 h-3 inline mr-1"></i> SETTINGS
+                    </p>
+
+                    <a href="javascript:void(0)" onclick="showPage('notifications')" id="btn-notifications" class="nav-btn flex items-center gap-3 p-3.5 rounded-xl hover:bg-gray-50 dark:hover:bg-green-900/20 transition-all group">
+                        <i data-lucide="bell" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="font-medium">Notifications</span>
+                        <span class="ml-auto bg-red-500 text-white text-[8px] font-black px-2 py-1 rounded-full">3</span>
+                    </a>
+
+                    <a href="javascript:void(0)" onclick="showPage('security')" id="btn-security" class="nav-btn flex items-center gap-3 p-3.5 rounded-xl hover:bg-gray-50 dark:hover:bg-green-900/20 transition-all group">
+                        <i data-lucide="shield" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="font-medium">Security</span>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Bottom Controls -->
+            <div class="pt-6 mt-6 border-t border-gray-100 dark:border-green-900/30">
+                <div class="flex items-center justify-between bg-gray-50 dark:bg-green-900/20 p-2 rounded-2xl">
+                    <button onclick="toggleDirection()" class="p-2.5 hover:bg-white dark:hover:bg-green-900/40 rounded-xl shadow-sm transition-all text-gray-400 hover:text-primary flex items-center gap-1">
+                        <i data-lucide="languages" class="w-4 h-4"></i>
+                        <span id="dirText" class="text-[10px] font-black">LTR</span>
+                    </button>
+                    <button onclick="toggleDarkMode()" class="p-2.5 bg-white dark:bg-green-900/40 rounded-xl text-primary shadow-sm hover:scale-110 transition-all">
+                        <i id="themeIcon" data-lucide="moon" class="w-4 h-4"></i>
+                    </button>
+                    <a href="login.html">
+                        <button class="p-2.5 bg-red-50 dark:bg-red-500/10 rounded-xl text-red-500 hover:scale-110 transition-all">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </button>
+                    </a>
+                </div>
+
+                <!-- Admin Profile -->
+                <div class="mt-4 p-3 bg-gradient-to-r from-primary/5 to-transparent rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-sm flex-shrink-0">TG</div>
+                        <div>
+                            <p class="font-bold text-sm text-slate-900 dark:text-white">Trail Admin</p>
+                            <p class="text-[9px] text-gray-400 uppercase font-black tracking-widest">Fleet Manager</p>
+                            <p class="text-[7px] text-gray-400">admin@trailgear.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="flex-1 lg:ml-[280px] p-4 sm:p-5 md:p-6 lg:p-8 transition-all duration-300 w-full max-w-full overflow-x-hidden">
+
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-6 sm:mb-8">
+            <div class="flex-1">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2.5 bg-white dark:bg-[#0f2318] rounded-xl custom-shadow border border-gray-50 dark:border-green-900/30">
+                        <i id="menuIcon" data-lucide="menu" class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 dark:text-white"></i>
+                    </button>
+                    <div>
+                        <h1 id="pageTitle" class="text-xl sm:text-2xl font-black tracking-tight uppercase">DASHBOARD</h1>
+                        <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mt-0.5">
+                            <span class="text-primary font-bold">TrailGear</span> · Outdoor Gear Rental Management
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="hidden sm:flex items-center gap-2 bg-white dark:bg-[#0f2318] px-4 py-2 rounded-xl custom-shadow">
+                    <i data-lucide="clock" class="w-4 h-4 text-primary"></i>
+                    <span class="text-xs font-medium" id="liveTime">10:30 AM</span>
+                </div>
+                <div class="relative">
+                    <button onclick="showPage('notifications')" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center relative">
+                        <i data-lucide="bell" class="w-5 h-5 text-primary"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full">3</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== PAGES ===== -->
+        <div id="mainDisplay" class="space-y-6">
+
+            <!-- === DASHBOARD PAGE === -->
+            <div id="page-stats" class="page-node active">
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+
+                    <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] custom-shadow border border-gray-100 dark:border-green-900/30 hover:shadow-lg transition-shadow">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest">TOTAL EARNINGS</p>
+                            <span class="bg-green-100 dark:bg-green-900/30 text-orange-600 dark:text-orange-400 text-[8px] sm:text-[9px] font-black px-2 py-1 rounded-full">+18%</span>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">$38,750</h3>
+                        <div class="mt-2 flex items-center gap-1">
+                            <i data-lucide="trending-up" class="w-3 h-3 text-orange-500"></i>
+                            <p class="text-orange-500 text-[9px] sm:text-[10px] font-bold">vs last month</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] custom-shadow border border-gray-100 dark:border-green-900/30">
+                        <p class="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">ACTIVE GEAR ITEMS</p>
+                        <h3 class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">847</h3>
+                        <div class="mt-2 flex items-center gap-1">
+                            <i data-lucide="backpack" class="w-3 h-3 text-primary"></i>
+                            <p class="text-[9px] sm:text-[10px] text-gray-500">32 added this month</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] custom-shadow border border-gray-100 dark:border-green-900/30">
+                        <p class="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">ACTIVE RENTERS</p>
+                        <h3 class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">3,240+</h3>
+                        <div class="mt-2 flex items-center gap-1">
+                            <i data-lucide="user-check" class="w-3 h-3 text-blue-500"></i>
+                            <p class="text-[9px] sm:text-[10px] text-gray-500">64 new today</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] custom-shadow border border-gray-100 dark:border-green-900/30">
+                        <p class="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">GEAR CONDITION</p>
+                        <h3 class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">99.1%</h3>
+                        <div class="mt-2 flex items-center gap-1">
+                            <i data-lucide="shield-check" class="w-3 h-3 text-orange-500"></i>
+                            <p class="text-[9px] sm:text-[10px] text-gray-500">All gear inspected</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="lg:col-span-2 bg-white dark:bg-[#0f2318] p-4 sm:p-6 rounded-2xl sm:rounded-[2.5rem] custom-shadow border border-gray-100 dark:border-green-900/30">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-xs sm:text-sm font-black uppercase tracking-wider">RENTAL REVENUE TREND</h4>
+                            <div class="flex gap-2">
+                                <span class="px-2 py-1 bg-gray-100 dark:bg-green-900/30 rounded-lg text-[8px] sm:text-[9px] font-black">2026</span>
+                            </div>
+                        </div>
+                        <div class="h-[200px] sm:h-[250px]">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 rounded-2xl sm:rounded-[2.5rem] custom-shadow border border-gray-100 dark:border-green-900/30">
+                        <h4 class="text-xs sm:text-sm font-black uppercase tracking-wider mb-4">GEAR CATEGORY MIX</h4>
+                        <div class="h-[200px] sm:h-[250px] flex items-center justify-center">
+                            <canvas id="trafficChart"></canvas>
+                        </div>
+                        <div class="mt-4 flex flex-col gap-1.5">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 bg-primary rounded-full flex-shrink-0"></span>
+                                <span class="text-[9px] sm:text-[10px] font-medium">Camping (38%)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
+                                <span class="text-[9px] sm:text-[10px] font-medium">Hiking (29%)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 bg-amber-500 rounded-full flex-shrink-0"></span>
+                                <span class="text-[9px] sm:text-[10px] font-medium">Water Sports (21%)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 bg-slate-400 rounded-full flex-shrink-0"></span>
+                                <span class="text-[9px] sm:text-[10px] font-medium">Climbing (12%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 rounded-2xl sm:rounded-[2.5rem] custom-shadow border border-gray-100 dark:border-green-900/30">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-xs sm:text-sm font-black uppercase tracking-wider">RECENT ACTIVITY</h4>
+                        <button class="text-primary text-[9px] sm:text-[10px] font-black uppercase hover:underline">View All</button>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-green-900/10 rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="check-circle" class="w-4 h-4 text-orange-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs sm:text-sm font-bold">New gear rental confirmed</p>
+                                    <p class="text-[8px] sm:text-[9px] text-gray-400">5 minutes ago</p>
+                                </div>
+                            </div>
+                            <span class="text-[9px] sm:text-[10px] font-black text-primary">#TG-4023</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-green-900/10 rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="user-plus" class="w-4 h-4 text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs sm:text-sm font-bold">New adventurer registered</p>
+                                    <p class="text-[8px] sm:text-[9px] text-gray-400">15 minutes ago</p>
+                                </div>
+                            </div>
+                            <span class="text-[9px] sm:text-[10px] font-black">Jamie Morrison</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-green-900/10 rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="wrench" class="w-4 h-4 text-yellow-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs sm:text-sm font-bold">Gear inspection completed</p>
+                                    <p class="text-[8px] sm:text-[9px] text-gray-400">1 hour ago</p>
+                                </div>
+                            </div>
+                            <span class="text-[9px] sm:text-[10px] font-black">Osprey 65L Backpack</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-green-900/10 rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="truck" class="w-4 h-4 text-primary"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs sm:text-sm font-bold">Gear delivered to trailhead</p>
+                                    <p class="text-[8px] sm:text-[9px] text-gray-400">2 hours ago</p>
+                                </div>
+                            </div>
+                            <span class="text-[9px] sm:text-[10px] font-black">Yosemite, CA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === GEAR INVENTORY PAGE === -->
+            <div id="page-content" class="page-node">
+                <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem] custom-shadow border border-gray-100 dark:border-green-900/30">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-black uppercase flex items-center gap-2">
+                                <i data-lucide="package" class="w-5 h-5 text-primary"></i>
+                                GEAR INVENTORY
+                            </h3>
+                            <p class="text-[9px] sm:text-[10px] text-gray-400 mt-1">Manage rental gear & adventure packages</p>
+                        </div>
+                        <button class="w-full sm:w-auto bg-primary text-white text-[10px] sm:text-[11px] font-black px-6 py-3 rounded-xl hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add New Gear
+                        </button>
+                    </div>
+
+                    <!-- Gear Categories Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-green-900/20 dark:to-green-900/10 p-6 sm:p-8 rounded-2xl sm:rounded-[2rem] text-center border border-gray-100 dark:border-green-900/30 hover:scale-[1.02] transition-transform">
+                            <div class="w-14 h-14 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
+                                <i data-lucide="tent" class="text-primary w-7 h-7"></i>
+                            </div>
+                            <p class="text-sm sm:text-base font-black uppercase">CAMPING GEAR</p>
+                            <p class="text-[10px] sm:text-[11px] text-gray-400 mt-2 uppercase font-bold">214 Items Active</p>
+                            <button class="mt-4 text-[9px] sm:text-[10px] text-primary font-black uppercase hover:underline">Manage →</button>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-green-900/20 dark:to-green-900/10 p-6 sm:p-8 rounded-2xl sm:rounded-[2rem] text-center border border-gray-100 dark:border-green-900/30 hover:scale-[1.02] transition-transform">
+                            <div class="w-14 h-14 mx-auto bg-blue-500/10 rounded-2xl flex items-center justify-center mb-4">
+                                <i data-lucide="backpack" class="text-blue-500 w-7 h-7"></i>
+                            </div>
+                            <p class="text-sm sm:text-base font-black uppercase">HIKING GEAR</p>
+                            <p class="text-[10px] sm:text-[11px] text-gray-400 mt-2 uppercase font-bold">186 Items Active</p>
+                            <button class="mt-4 text-[9px] sm:text-[10px] text-blue-500 font-black uppercase hover:underline">Manage →</button>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-green-900/20 dark:to-green-900/10 p-6 sm:p-8 rounded-2xl sm:rounded-[2rem] text-center border border-gray-100 dark:border-green-900/30 hover:scale-[1.02] transition-transform">
+                            <div class="w-14 h-14 mx-auto bg-amber-500/10 rounded-2xl flex items-center justify-center mb-4">
+                                <i data-lucide="waves" class="text-amber-500 w-7 h-7"></i>
+                            </div>
+                            <p class="text-sm sm:text-base font-black uppercase">WATER SPORTS</p>
+                            <p class="text-[10px] sm:text-[11px] text-gray-400 mt-2 uppercase font-bold">128 Items Active</p>
+                            <button class="mt-4 text-[9px] sm:text-[10px] text-amber-500 font-black uppercase hover:underline">Manage →</button>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-green-900/20 dark:to-green-900/10 p-6 sm:p-8 rounded-2xl sm:rounded-[2rem] text-center border border-gray-100 dark:border-green-900/30 hover:scale-[1.02] transition-transform">
+                            <div class="w-14 h-14 mx-auto bg-red-500/10 rounded-2xl flex items-center justify-center mb-4">
+                                <i data-lucide="triangle" class="text-red-500 w-7 h-7"></i>
+                            </div>
+                            <p class="text-sm sm:text-base font-black uppercase">CLIMBING GEAR</p>
+                            <p class="text-[10px] sm:text-[11px] text-gray-400 mt-2 uppercase font-bold">94 Items Active</p>
+                            <button class="mt-4 text-[9px] sm:text-[10px] text-red-500 font-black uppercase hover:underline">Manage →</button>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-green-900/20 dark:to-green-900/10 p-6 sm:p-8 rounded-2xl sm:rounded-[2rem] text-center border border-gray-100 dark:border-green-900/30 hover:scale-[1.02] transition-transform">
+                            <div class="w-14 h-14 mx-auto bg-teal-500/10 rounded-2xl flex items-center justify-center mb-4">
+                                <i data-lucide="snowflake" class="text-teal-500 w-7 h-7"></i>
+                            </div>
+                            <p class="text-sm sm:text-base font-black uppercase">WINTER GEAR</p>
+                            <p class="text-[10px] sm:text-[11px] text-gray-400 mt-2 uppercase font-bold">67 Items Active</p>
+                            <button class="mt-4 text-[9px] sm:text-[10px] text-teal-500 font-black uppercase hover:underline">Manage →</button>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-green-900/20 dark:to-green-900/10 p-6 sm:p-8 rounded-2xl sm:rounded-[2rem] text-center border border-gray-100 dark:border-green-900/30 hover:scale-[1.02] transition-transform">
+                            <div class="w-14 h-14 mx-auto bg-purple-500/10 rounded-2xl flex items-center justify-center mb-4">
+                                <i data-lucide="tag" class="text-purple-500 w-7 h-7"></i>
+                            </div>
+                            <p class="text-sm sm:text-base font-black uppercase">ACTIVE DEALS</p>
+                            <p class="text-[10px] sm:text-[11px] text-gray-400 mt-2 uppercase font-bold">6 Live Campaigns</p>
+                            <button class="mt-4 text-[9px] sm:text-[10px] text-purple-500 font-black uppercase hover:underline">Manage →</button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="mt-8 grid grid-cols-2 gap-4">
+                        <div class="p-4 bg-gray-50 dark:bg-green-900/10 rounded-xl border border-gray-100 dark:border-green-900/20">
+                            <p class="text-[9px] font-black text-gray-400 uppercase">TODAY'S RENTALS</p>
+                            <p class="text-lg font-black mt-1">86</p>
+                            <span class="text-[8px] text-orange-500 font-bold">+23% vs yesterday</span>
+                        </div>
+                        <div class="p-4 bg-gray-50 dark:bg-green-900/10 rounded-xl border border-gray-100 dark:border-green-900/20">
+                            <p class="text-[9px] font-black text-gray-400 uppercase">RETURNS TODAY</p>
+                            <p class="text-lg font-black mt-1">41</p>
+                            <span class="text-[8px] text-orange-500 font-bold">All inspected ✓</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === RENTAL BOOKINGS PAGE === -->
+            <div id="page-bookings" class="page-node">
+                <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 md:p-10 rounded-2xl sm:rounded-[2.5rem] custom-shadow border border-gray-100 dark:border-green-900/30">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-black uppercase flex items-center gap-2">
+                                <i data-lucide="calendar-check" class="w-5 h-5 text-primary"></i>
+                                LIVE RENTALS
+                            </h3>
+                            <p class="text-[9px] sm:text-[10px] text-gray-400 mt-1">Today's gear rentals · 31 total</p>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button class="flex-1 sm:flex-none bg-primary/10 text-primary text-[9px] sm:text-[10px] font-black px-4 py-2.5 rounded-xl flex items-center justify-center gap-1">
+                                <i data-lucide="filter" class="w-3 h-3"></i> Filter
+                            </button>
+                            <button class="flex-1 sm:flex-none bg-primary text-white text-[9px] sm:text-[10px] font-black px-4 py-2.5 rounded-xl flex items-center justify-center gap-1">
+                                <i data-lucide="download" class="w-3 h-3"></i> Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bookings Table -->
+                    <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                        <table class="w-full min-w-[600px] sm:min-w-full text-left">
+                            <thead class="border-b border-gray-200 dark:border-green-900/30 text-[9px] sm:text-[10px] uppercase font-black text-gray-400">
+                                <tr>
+                                    <th class="pb-3 sm:pb-4">RENTAL ID</th>
+                                    <th class="pb-3 sm:pb-4">ADVENTURER</th>
+                                    <th class="pb-3 sm:pb-4">GEAR ITEM</th>
+                                    <th class="pb-3 sm:pb-4 text-center">STATUS</th>
+                                    <th class="pb-3 sm:pb-4 text-right">ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-xs sm:text-sm font-medium">
+                                <tr class="border-b border-gray-100 dark:border-green-900/20 hover:bg-gray-50 dark:hover:bg-green-900/10 transition-colors">
+                                    <td class="py-3 sm:py-4 font-black uppercase text-primary">#TG-4021</td>
+                                    <td class="py-3 sm:py-4">
+                                        <div>
+                                            <p class="font-bold">Jamie Morrison</p>
+                                            <p class="text-[8px] text-gray-400">Yosemite, CA · 5 days</p>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 sm:py-4"><span class="text-[9px] sm:text-[10px]">4-Person Camping Tent</span></td>
+                                    <td class="py-3 sm:py-4 text-center">
+                                        <span class="bg-primary/10 text-primary px-2 sm:px-3 py-1.5 rounded-full text-[8px] sm:text-[9px] font-black uppercase whitespace-nowrap">OUT ON TRAIL</span>
+                                    </td>
+                                    <td class="py-3 sm:py-4 text-right">
+                                        <button class="p-1.5 hover:bg-gray-200 dark:hover:bg-green-900/30 rounded-lg">
+                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 dark:border-green-900/20 hover:bg-gray-50 dark:hover:bg-green-900/10 transition-colors">
+                                    <td class="py-3 sm:py-4 font-black uppercase text-primary">#TG-4022</td>
+                                    <td class="py-3 sm:py-4">
+                                        <div>
+                                            <p class="font-bold">Sarah Rawlings</p>
+                                            <p class="text-[8px] text-gray-400">Rocky Mountain, CO · 3 days</p>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 sm:py-4"><span class="text-[9px] sm:text-[10px]">Osprey 65L Backpack</span></td>
+                                    <td class="py-3 sm:py-4 text-center">
+                                        <span class="bg-blue-100 dark:bg-blue-900/20 text-blue-600 px-2 sm:px-3 py-1.5 rounded-full text-[8px] sm:text-[9px] font-black uppercase whitespace-nowrap">DELIVERING</span>
+                                    </td>
+                                    <td class="py-3 sm:py-4 text-right">
+                                        <button class="p-1.5 hover:bg-gray-200 dark:hover:bg-green-900/30 rounded-lg">
+                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 dark:border-green-900/20 hover:bg-gray-50 dark:hover:bg-green-900/10 transition-colors">
+                                    <td class="py-3 sm:py-4 font-black uppercase text-primary">#TG-4023</td>
+                                    <td class="py-3 sm:py-4">
+                                        <div>
+                                            <p class="font-bold">Daniel Kim</p>
+                                            <p class="text-[8px] text-gray-400">Zion Canyon, UT · 7 days</p>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 sm:py-4"><span class="text-[9px] sm:text-[10px]">Full Climbing Bundle</span></td>
+                                    <td class="py-3 sm:py-4 text-center">
+                                        <span class="bg-green-100 dark:bg-green-900/20 text-orange-600 px-2 sm:px-3 py-1.5 rounded-full text-[8px] sm:text-[9px] font-black uppercase whitespace-nowrap">CONFIRMED</span>
+                                    </td>
+                                    <td class="py-3 sm:py-4 text-right">
+                                        <button class="p-1.5 hover:bg-gray-200 dark:hover:bg-green-900/30 rounded-lg">
+                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 dark:border-green-900/20 hover:bg-gray-50 dark:hover:bg-green-900/10 transition-colors">
+                                    <td class="py-3 sm:py-4 font-black uppercase text-primary">#TG-4024</td>
+                                    <td class="py-3 sm:py-4">
+                                        <div>
+                                            <p class="font-bold">Priya Lanza</p>
+                                            <p class="text-[8px] text-gray-400">Olympic Peninsula, WA · 4 days</p>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 sm:py-4"><span class="text-[9px] sm:text-[10px]">Single Touring Kayak</span></td>
+                                    <td class="py-3 sm:py-4 text-center">
+                                        <span class="bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 px-2 sm:px-3 py-1.5 rounded-full text-[8px] sm:text-[9px] font-black uppercase whitespace-nowrap">RETURN DUE</span>
+                                    </td>
+                                    <td class="py-3 sm:py-4 text-right">
+                                        <button class="p-1.5 hover:bg-gray-200 dark:hover:bg-green-900/30 rounded-lg">
+                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 dark:hover:bg-green-900/10 transition-colors">
+                                    <td class="py-3 sm:py-4 font-black uppercase text-primary">#TG-4025</td>
+                                    <td class="py-3 sm:py-4">
+                                        <div>
+                                            <p class="font-bold">Alex Turner</p>
+                                            <p class="text-[8px] text-gray-400">Grand Canyon, AZ · Group of 8</p>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 sm:py-4"><span class="text-[9px] sm:text-[10px]">Group Expedition Kit</span></td>
+                                    <td class="py-3 sm:py-4 text-center">
+                                        <span class="bg-red-100 dark:bg-red-900/20 text-red-600 px-2 sm:px-3 py-1.5 rounded-full text-[8px] sm:text-[9px] font-black uppercase whitespace-nowrap">RETURNED</span>
+                                    </td>
+                                    <td class="py-3 sm:py-4 text-right">
+                                        <button class="p-1.5 hover:bg-gray-200 dark:hover:bg-green-900/30 rounded-lg">
+                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Booking Stats -->
+                    <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="p-3 bg-primary/5 dark:bg-primary/10 rounded-xl text-center border border-primary/10">
+                            <p class="text-[9px] font-black text-gray-400 uppercase">OUT ON TRAIL</p>
+                            <p class="text-base font-black mt-1 text-primary">14</p>
+                        </div>
+                        <div class="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl text-center border border-blue-100 dark:border-blue-900/20">
+                            <p class="text-[9px] font-black text-gray-400 uppercase">DELIVERING</p>
+                            <p class="text-base font-black mt-1 text-blue-600">8</p>
+                        </div>
+                        <div class="p-3 bg-yellow-50 dark:bg-yellow-900/10 rounded-xl text-center border border-yellow-100 dark:border-yellow-900/20">
+                            <p class="text-[9px] font-black text-gray-400 uppercase">RETURN DUE</p>
+                            <p class="text-base font-black mt-1 text-yellow-600">6</p>
+                        </div>
+                        <div class="p-3 bg-red-50 dark:bg-red-900/10 rounded-xl text-center border border-red-100 dark:border-red-900/20">
+                            <p class="text-[9px] font-black text-gray-400 uppercase">OVERDUE</p>
+                            <p class="text-base font-black mt-1 text-red-600">3</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === NOTIFICATIONS PAGE === -->
+            <div id="page-notifications" class="page-node">
+                <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 rounded-2xl custom-shadow border border-gray-100 dark:border-green-900/30">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-black uppercase flex items-center gap-2">
+                                <i data-lucide="bell" class="w-5 h-5 text-primary"></i> NOTIFICATIONS
+                            </h3>
+                            <p class="text-[9px] sm:text-[10px] text-gray-400 mt-1">Stay updated with latest gear activities</p>
+                        </div>
+                        <button class="bg-primary/10 text-primary text-[9px] font-black px-4 py-2 rounded-xl hover:bg-primary/20 transition-colors flex items-center gap-1">
+                            <i data-lucide="check-check" class="w-3 h-3"></i> Mark All Read
+                        </button>
+                    </div>
+
+                    <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+                        <button class="bg-primary text-white text-[8px] sm:text-[9px] font-black px-4 py-2 rounded-full whitespace-nowrap">All</button>
+                        <button class="bg-gray-100 dark:bg-green-900/20 text-gray-600 dark:text-gray-300 text-[8px] sm:text-[9px] font-black px-4 py-2 rounded-full whitespace-nowrap hover:bg-gray-200">Unread</button>
+                        <button class="bg-gray-100 dark:bg-green-900/20 text-gray-600 dark:text-gray-300 text-[8px] sm:text-[9px] font-black px-4 py-2 rounded-full whitespace-nowrap hover:bg-gray-200">Rentals</button>
+                        <button class="bg-gray-100 dark:bg-green-900/20 text-gray-600 dark:text-gray-300 text-[8px] sm:text-[9px] font-black px-4 py-2 rounded-full whitespace-nowrap hover:bg-gray-200">System</button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- New Rental -->
+                        <div class="p-4 bg-primary/5 rounded-2xl border border-primary/20 notification-item">
+                            <div class="flex items-start gap-3">
+                                <div class="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="package-check" class="w-5 h-5 text-primary"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-xs sm:text-sm font-black text-gray-900 dark:text-white">New Gear Rental Confirmed</p>
+                                        <span class="text-[8px] text-gray-400">5 min ago</span>
+                                    </div>
+                                    <p class="text-[9px] sm:text-[10px] text-gray-600 dark:text-gray-400 mt-0.5">Jamie Morrison rented a 4-Person Tent + Sleeping Bags for 5 days at Yosemite. Total: $185</p>
+                                    <div class="flex items-center gap-2 mt-2">
+                                        <span class="bg-red-500 text-white text-[6px] font-black px-2 py-0.5 rounded-full">NEW</span>
+                                        <span class="text-[8px] text-primary font-bold">Rental #TG-4023</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- New Adventurer -->
+                        <div class="p-4 bg-gray-50 dark:bg-green-900/10 rounded-2xl notification-item">
+                            <div class="flex items-start gap-3">
+                                <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="user-plus" class="w-5 h-5 text-blue-500"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-xs sm:text-sm font-black text-gray-900 dark:text-white">New Adventurer Registration</p>
+                                        <span class="text-[8px] text-gray-400">15 min ago</span>
+                                    </div>
+                                    <p class="text-[9px] sm:text-[10px] text-gray-600 dark:text-gray-400 mt-0.5">Nora Liu registered as a new member. ID verification pending review.</p>
+                                    <div class="flex items-center gap-2 mt-2">
+                                        <span class="bg-red-500 text-white text-[6px] font-black px-2 py-0.5 rounded-full">NEW</span>
+                                        <span class="text-[8px] text-blue-500 font-bold">Action Required</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Update -->
+                        <div class="p-4 bg-gray-50 dark:bg-green-900/10 rounded-2xl notification-item">
+                            <div class="flex items-start gap-3">
+                                <div class="w-10 h-10 bg-yellow-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="settings" class="w-5 h-5 text-yellow-500"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-xs sm:text-sm font-black text-gray-900 dark:text-white">System Update</p>
+                                        <span class="text-[8px] text-gray-400">1 hour ago</span>
+                                    </div>
+                                    <p class="text-[9px] sm:text-[10px] text-gray-600 dark:text-gray-400 mt-0.5">TrailGear Rental Management System v3.0.1 scheduled for tonight at 2 AM MST.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gear Inspection Alert -->
+                        <div class="p-4 bg-gray-50 dark:bg-green-900/10 rounded-2xl notification-item">
+                            <div class="flex items-start gap-3">
+                                <div class="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-xs sm:text-sm font-black text-gray-900 dark:text-white">Gear Inspection Required</p>
+                                        <span class="text-[8px] text-gray-400">3 hours ago</span>
+                                    </div>
+                                    <p class="text-[9px] sm:text-[10px] text-gray-600 dark:text-gray-400 mt-0.5">4 climbing harnesses are due for mandatory safety inspection this week. Schedule immediately.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <button class="text-primary text-[9px] font-black uppercase hover:underline">Load More Notifications</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === SECURITY PAGE === -->
+            <div id="page-security" class="page-node">
+                <div class="bg-white dark:bg-[#0f2318] p-4 sm:p-6 rounded-2xl custom-shadow border border-gray-100 dark:border-green-900/30">
+                    <div class="flex items-center gap-2 mb-6">
+                        <i data-lucide="shield" class="w-6 h-6 text-primary"></i>
+                        <h3 class="text-lg sm:text-xl font-black uppercase">Security Settings</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Security Menu -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-gray-50 dark:bg-green-900/10 rounded-xl p-2 space-y-1">
+                                <button class="w-full flex items-center gap-3 p-3 rounded-lg bg-primary/10 text-primary">
+                                    <i data-lucide="lock" class="w-4 h-4"></i>
+                                    <span class="text-xs font-bold">Password & Auth</span>
+                                </button>
+                                <button class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white dark:hover:bg-green-900/20 transition-colors">
+                                    <i data-lucide="smartphone" class="w-4 h-4"></i>
+                                    <span class="text-xs font-medium">Two-Factor Auth</span>
+                                </button>
+                                <button class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white dark:hover:bg-green-900/20 transition-colors">
+                                    <i data-lucide="history" class="w-4 h-4"></i>
+                                    <span class="text-xs font-medium">Login History</span>
+                                </button>
+                                <button class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white dark:hover:bg-green-900/20 transition-colors">
+                                    <i data-lucide="fingerprint" class="w-4 h-4"></i>
+                                    <span class="text-xs font-medium">Biometrics</span>
+                                </button>
+                            </div>
+
+                            <!-- Security Score -->
+                            <div class="mt-4 p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-100 dark:border-green-900/30">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-[9px] font-black text-gray-400 uppercase">Security Score</p>
+                                    <span class="text-orange-600 text-xs font-black">92%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 dark:bg-green-900/30 rounded-full h-2 mt-2">
+                                    <div class="bg-orange-500 h-2 rounded-full" style="width: 92%"></div>
+                                </div>
+                                <p class="text-[8px] text-gray-500 mt-2 flex items-center gap-1">
+                                    <i data-lucide="check-circle" class="w-3 h-3 text-orange-500"></i> Excellent — Last reviewed today
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Security Content -->
+                        <div class="lg:col-span-2">
+                            <div class="space-y-6">
+                                <!-- Password Section -->
+                                <div>
+                                    <h4 class="text-xs font-black uppercase mb-4 flex items-center gap-2">
+                                        <i data-lucide="key" class="w-4 h-4 text-primary"></i>
+                                        Password & Authentication
+                                    </h4>
+                                    <div class="bg-gray-50 dark:bg-green-900/10 rounded-xl p-4 space-y-4 border border-gray-100 dark:border-green-900/20">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-xs font-bold">Current Password</p>
+                                                <p class="text-[8px] text-gray-400 mt-0.5">Last changed 14 days ago</p>
+                                            </div>
+                                            <button class="text-[9px] font-black text-primary hover:underline">Change</button>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-xs font-bold">Password Strength</p>
+                                                <div class="flex items-center gap-1 mt-1">
+                                                    <span class="w-1 h-4 bg-orange-500 rounded-full"></span>
+                                                    <span class="w-1 h-4 bg-orange-500 rounded-full"></span>
+                                                    <span class="w-1 h-4 bg-orange-500 rounded-full"></span>
+                                                    <span class="w-1 h-4 bg-orange-500 rounded-full"></span>
+                                                    <span class="w-1 h-4 bg-gray-300 dark:bg-gray-600 rounded-full"></span>
+                                                    <span class="text-[8px] font-bold text-orange-600 ml-1">Very Strong</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 2FA -->
+                                <div>
+                                    <h4 class="text-xs font-black uppercase mb-4 flex items-center gap-2">
+                                        <i data-lucide="smartphone" class="w-4 h-4 text-primary"></i>
+                                        Two-Factor Authentication (2FA)
+                                    </h4>
+                                    <div class="bg-gray-50 dark:bg-green-900/10 rounded-xl p-4 border border-gray-100 dark:border-green-900/20">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-xs font-bold">Authenticator App</p>
+                                                <p class="text-[8px] text-gray-400 mt-0.5">Google Authenticator, Authy, or similar</p>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" class="sr-only peer" checked>
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                            </label>
+                                        </div>
+                                        <p class="text-[8px] text-orange-600 mt-2 flex items-center gap-1">
+                                            <i data-lucide="check-circle" class="w-3 h-3"></i>
+                                            2FA is enabled for your account
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Login History -->
+                                <div>
+                                    <h4 class="text-xs font-black uppercase mb-4 flex items-center gap-2">
+                                        <i data-lucide="history" class="w-4 h-4 text-primary"></i>
+                                        Recent Login Activity
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-green-900/10 rounded-xl border border-gray-100 dark:border-green-900/20">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                                                    <i data-lucide="smartphone" class="w-4 h-4 text-orange-600"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-xs font-bold">Denver, CO</p>
+                                                    <p class="text-[8px] text-gray-400">iPhone 15 Pro · 1 hour ago</p>
+                                                </div>
+                                            </div>
+                                            <span class="text-[8px] font-black text-orange-600">Current</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-green-900/10 rounded-xl border border-gray-100 dark:border-green-900/20">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-gray-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                                                    <i data-lucide="laptop" class="w-4 h-4 text-gray-600"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-xs font-bold">Boulder, CO</p>
+                                                    <p class="text-[8px] text-gray-400">MacBook Pro · Yesterday</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="mt-3 text-[9px] text-primary font-black hover:underline">View full login history →</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-8 text-center text-[8px] sm:text-[9px] text-gray-400 uppercase tracking-wider">
+            <p>© 2026 TrailGear Outdoor Rentals · All rights reserved</p>
+            <p class="mt-1">Gear Rental Management System v3.0.1</p>
+        </footer>
+    </main>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuIcon = document.getElementById('menuIcon');
+        sidebar.classList.toggle('-translate-x-full');
+        if (window.innerWidth < 1024) { if (overlay) overlay.classList.toggle('hidden'); }
+        if (menuIcon) { menuIcon.setAttribute('data-lucide', sidebar.classList.contains('-translate-x-full') ? 'menu' : 'x'); lucide.createIcons(); }
+    }
+
+    window.addEventListener('resize', function() {
+        const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('sidebarOverlay');
+        if (window.innerWidth >= 1024) { sidebar.classList.remove('-translate-x-full'); if (overlay) overlay.classList.add('hidden'); }
+        else { sidebar.classList.add('-translate-x-full'); if (overlay) overlay.classList.add('hidden'); }
+    });
+
+    function toggleDarkMode() {
+        const html = document.documentElement; html.classList.toggle('dark');
+        const icon = document.getElementById('themeIcon'); const isDark = html.classList.contains('dark');
+        icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon'); lucide.createIcons();
+        localStorage.setItem('darkMode', isDark ? 'dark' : 'light');
+    }
+    if (localStorage.getItem('darkMode') === 'dark') { document.documentElement.classList.add('dark'); document.getElementById('themeIcon')?.setAttribute('data-lucide', 'sun'); lucide.createIcons(); }
+
+    function toggleDirection() {
+        const html = document.getElementById('htmlTag'); const dirText = document.getElementById('dirText');
+        html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl'; dirText.innerText = html.dir.toUpperCase();
+        if (window.revenueChart) window.revenueChart.update();
+        lucide.createIcons();
+    }
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page-node').forEach(p => p.classList.remove('active'));
+        const targetNode = document.getElementById('page-' + pageId);
+        if (targetNode) targetNode.classList.add('active');
+        const pageTitles = { 'stats': 'DASHBOARD', 'content': 'GEAR INVENTORY', 'bookings': 'RENTAL BOOKINGS', 'notifications': 'NOTIFICATIONS', 'security': 'SECURITY' };
+        const titleElement = document.getElementById('pageTitle');
+        if (titleElement) titleElement.innerText = pageTitles[pageId] || pageId.toUpperCase();
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('sidebar-active'));
+        const activeBtn = document.getElementById('btn-' + pageId);
+        if (activeBtn) activeBtn.classList.add('sidebar-active');
+        if (window.innerWidth < 1024) toggleSidebar();
+        if (pageId === 'stats' && window.revenueChart) { setTimeout(() => { window.revenueChart.update(); window.trafficChart?.update(); }, 100); }
+    }
+
+    function updateLiveTime() {
+        const timeElement = document.getElementById('liveTime');
+        if (timeElement) { const now = new Date(); const h = now.getHours(); const m = now.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; timeElement.innerText = `${h % 12 || 12}:${m.toString().padStart(2,'0')} ${ampm} MST`; }
+    }
+    setInterval(updateLiveTime, 1000); updateLiveTime();
+
+    // Revenue Chart
+    const ctxRevenue = document.getElementById('revenueChart')?.getContext('2d');
+    if (ctxRevenue) {
+        window.revenueChart = new Chart(ctxRevenue, {
+            type: 'line',
+            data: {
+                labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+                datasets: [{ label: 'Rental Revenue', data: [18000,24000,21000,31000,38000,43000], borderColor: '#ff8000', backgroundColor: 'rgba(255, 128, 0,0.1)', borderWidth: 2, pointRadius: 3, pointHoverRadius: 6, tension: 0.4, fill: true }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#fff', titleColor: '#111827', bodyColor: '#4B5563', borderColor: '#E5E7EB', borderWidth: 1 } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { callback: function(value) { return '$' + value.toLocaleString(); } } }, x: { grid: { display: false } } } }
+        });
+    }
+
+    // Category Doughnut Chart
+    const ctxTraffic = document.getElementById('trafficChart')?.getContext('2d');
+    if (ctxTraffic) {
+        window.trafficChart = new Chart(ctxTraffic, {
+            type: 'doughnut',
+            data: {
+                labels: ['Camping','Hiking','Water Sports','Climbing'],
+                datasets: [{ data: [38,29,21,12], backgroundColor: ['#ff8000','#3B82F6','#F59E0B','#94A3B8'], borderWidth: 0, hoverOffset: 4 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false }, tooltip: { backgroundColor: '#fff', titleColor: '#111827', bodyColor: '#4B5563' } } }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const overlay = document.createElement('div');
+        overlay.id = 'sidebarOverlay';
+        overlay.className = 'fixed inset-0 bg-black/50 z-40 hidden lg:hidden transition-opacity duration-300';
+        overlay.onclick = toggleSidebar;
+        document.body.appendChild(overlay);
+        showPage('stats'); lucide.createIcons();
+    });
+
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) { event.preventDefault(); }
+        lastTouchEnd = now;
+    }, false);
+</script>
+</body>
+</html>
