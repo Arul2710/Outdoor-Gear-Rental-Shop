@@ -281,131 +281,82 @@
         <div class="absolute inset-0 bg-gradient-to-b from-[#0f172a]/90 via-[#0f172a]/70 to-[#ff8000]/20 lg:bg-gradient-to-r lg:from-[#0f172a]/95 lg:via-[#0f172a]/60 lg:to-[#ff8000]/20"></div>
     </div>
 
-    <div class="container mx-auto relative z-10 max-w-7xl">
-        <div class="flex flex-col lg:flex-row items-center justify-center gap-6 md:gap-8 lg:gap-10 xl:gap-12">
+    <div class="container mx-auto relative z-10 max-w-7xl px-4">
+    <div class="flex flex-col lg:flex-row items-center justify-center gap-4 md:gap-8">
 
-            <!-- ===== GEAR RENTAL FORM ===== -->
-            <div class="w-full max-w-[90%] sm:max-w-[500px] md:max-w-[550px] lg:max-w-[460px] xl:max-w-[500px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-5 md:p-6 lg:p-7 xl:p-8 border border-white/20 dark:border-slate-800 mx-auto">
+        <div class="w-full max-w-[340px] sm:max-w-[400px] md:max-w-[450px] lg:max-w-[400px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20 dark:border-slate-800 mx-auto">
 
-                <!-- Tabs -->
-                <div class="flex border-b border-slate-200 dark:border-slate-800 mb-5 gap-1" id="tab-container">
-                    <button onclick="switchTab(this)" class="flex-1 pb-2.5 font-black text-[10px] sm:text-xs md:text-sm px-1 transition-all text-[#ff8000] border-b-2 border-[#ff8000] whitespace-nowrap">Daily Rental</button>
-                    <button onclick="switchTab(this)" class="flex-1 pb-2.5 font-black text-[10px] sm:text-xs md:text-sm px-1 transition-all text-gray-400 dark:text-gray-500 hover:text-[#ff8000] border-b-2 border-transparent whitespace-nowrap">Weekly Kit</button>
-                    <button onclick="switchTab(this)" class="flex-1 pb-2.5 font-black text-[10px] sm:text-xs md:text-sm px-1 transition-all text-gray-400 dark:text-gray-500 hover:text-[#ff8000] border-b-2 border-transparent whitespace-nowrap">Group Bundle</button>
-                </div>
-
-                <!-- Heading -->
-                <h1 class="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-black mb-4 leading-tight text-slate-800 dark:text-white text-center lg:text-left">
-                    Rent Your <span class="text-[#ff8000]">Outdoor Gear</span> <br class="hidden sm:block">For Your Next Trail
-                </h1>
-
-                <div class="space-y-3 sm:space-y-4">
-
-                    <!-- Gear Category -->
-                    <div class="relative group">
-                        <label class="text-[8px] sm:text-[10px] uppercase font-black text-[#ff8000] absolute left-3 md:left-4 top-1.5 md:top-2 z-10 tracking-wide">Gear Category</label>
-                        <select class="w-full pt-5 md:pt-6 pb-2 px-3 md:px-4 bg-slate-50 dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 rounded-xl sm:rounded-2xl font-bold text-[10px] sm:text-xs md:text-sm outline-none focus:border-[#ff8000] transition-all cursor-pointer dark:text-white appearance-none pr-8">
-                            <option class="dark:bg-slate-800">🏕️ Camping Kit (Tent + Sleeping Bag + Stove)</option>
-                            <option class="dark:bg-slate-800">🥾 Hiking Gear (Backpack + Boots + Poles)</option>
-                            <option class="dark:bg-slate-800">🧗 Climbing Bundle (Harness + Rope + Helmet)</option>
-                            <option class="dark:bg-slate-800">🛶 Water Sports (Kayak + Paddle + Life Vest)</option>
-                            <option class="dark:bg-slate-800">❄️ Winter Kit (Snow Gear + Crampons + Gaiters)</option>
-                            <option class="dark:bg-slate-800">🎒 Custom – Individual Items</option>
-                        </select>
-                    </div>
-
-                    <!-- Destination Park -->
-                    <div class="relative group">
-                        <label class="text-[8px] sm:text-[10px] uppercase font-black text-[#ff8000] absolute left-3 md:left-4 top-1.5 md:top-2 z-10 tracking-wide">Delivery Destination</label>
-                        <select class="w-full pt-5 md:pt-6 pb-2 px-3 md:px-4 bg-slate-50 dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 rounded-xl sm:rounded-2xl font-bold text-[10px] sm:text-xs md:text-sm outline-none focus:border-[#ff8000] transition-all cursor-pointer dark:text-white appearance-none pr-8">
-                            <option class="dark:bg-slate-800">📍 Yosemite, CA</option>
-                            <option class="dark:bg-slate-800">📍 Rocky Mountain, CO</option>
-                            <option class="dark:bg-slate-800">📍 Zion Canyon, UT</option>
-                            <option class="dark:bg-slate-800">📍 Grand Canyon, AZ</option>
-                            <option class="dark:bg-slate-800">📍 Olympic Peninsula, WA</option>
-                            <option class="dark:bg-slate-800">📍 Appalachian Trail, GA</option>
-                        </select>
-                    </div>
-
-                    <!-- Dates -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                        <div class="bg-slate-50 dark:bg-slate-800/90 p-2 md:p-2.5 border-2 border-slate-200 dark:border-slate-700 rounded-xl sm:rounded-2xl focus-within:border-[#ff8000] transition-all">
-                            <p class="text-[7px] sm:text-[9px] uppercase font-black text-slate-500 dark:text-slate-400 ml-1 tracking-wide">Pickup Date</p>
-                            <input type="datetime-local" class="bg-transparent text-[8px] sm:text-[10px] md:text-xs font-bold w-full p-0.5 outline-none cursor-pointer dark:text-white">
-                        </div>
-                        <div class="bg-slate-50 dark:bg-slate-800/90 p-2 md:p-2.5 border-2 border-slate-200 dark:border-slate-700 rounded-xl sm:rounded-2xl focus-within:border-[#ff8000] transition-all">
-                            <p class="text-[7px] sm:text-[9px] uppercase font-black text-slate-500 dark:text-slate-400 ml-1 tracking-wide">Return Date</p>
-                            <input type="datetime-local" class="bg-transparent text-[8px] sm:text-[10px] md:text-xs font-bold w-full p-0.5 outline-none cursor-pointer dark:text-white">
-                        </div>
-                    </div>
-
-                    <!-- Group size -->
-                    <div class="relative group">
-                        <label class="text-[8px] sm:text-[10px] uppercase font-black text-[#ff8000] absolute left-3 md:left-4 top-1.5 md:top-2 z-10 tracking-wide">Group Size</label>
-                        <select class="w-full pt-5 md:pt-6 pb-2 px-3 md:px-4 bg-slate-50 dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 rounded-xl sm:rounded-2xl font-bold text-[10px] sm:text-xs md:text-sm outline-none focus:border-[#ff8000] transition-all cursor-pointer dark:text-white appearance-none pr-8">
-                            <option class="dark:bg-slate-800">Solo (1 Person)</option>
-                            <option class="dark:bg-slate-800">Duo (2 People)</option>
-                            <option class="dark:bg-slate-800">Small Group (3–5 People)</option>
-                            <option class="dark:bg-slate-800">Large Group (6–10 People)</option>
-                            <option class="dark:bg-slate-800">Team / Corporate (10+)</option>
-                        </select>
-                    </div>
-
-                    
-
-                    <!-- Submit Button -->
-                    <button class="w-full bg-[#ff8000] text-white font-black py-3 sm:py-3.5 md:py-4 rounded-xl sm:rounded-2xl hover:bg-[#c2410c] transition-all duration-300 uppercase tracking-widest mt-2 shadow-lg shadow-[#ff8000]/30 flex justify-center items-center gap-2 text-[10px] sm:text-xs md:text-sm lg:text-base border-2 border-[#ff8000] active:scale-95">
-                        <i data-lucide="package-check" class="w-4 h-4 sm:w-5 sm:h-5"></i> Reserve My Gear
-                    </button>
-                </div>
+            <div class="flex border-b border-slate-200 dark:border-slate-800 mb-4 gap-1" id="tab-container">
+                <button onclick="switchTab(this)" class="flex-1 pb-2 font-black text-[9px] sm:text-xs transition-all text-[#ff8000] border-b-2 border-[#ff8000] whitespace-nowrap">Daily</button>
+                <button onclick="switchTab(this)" class="flex-1 pb-2 font-black text-[9px] sm:text-xs transition-all text-gray-400 dark:text-gray-500 hover:text-[#ff8000] border-b-2 border-transparent whitespace-nowrap">Weekly</button>
+                <button onclick="switchTab(this)" class="flex-1 pb-2 font-black text-[9px] sm:text-xs transition-all text-gray-400 dark:text-gray-500 hover:text-[#ff8000] border-b-2 border-transparent whitespace-nowrap">Group</button>
             </div>
 
-            <!-- ===== GEAR FEATURE CARDS ===== -->
-            <div class="w-full lg:flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 lg:gap-5 text-white mt-6 lg:mt-0">
+            <h1 class="text-lg md:text-xl lg:text-2xl font-black mb-3 leading-tight text-slate-800 dark:text-white text-center">
+                Rent Your <span class="text-[#ff8000]">Outdoor Gear</span>
+            </h1>
 
-                <div class="flex gap-3 md:gap-4 p-3 md:p-4 lg:p-5 rounded-xl sm:rounded-2xl bg-black/60 dark:bg-slate-900/70 backdrop-blur-md border border-white/20 dark:border-slate-800 group hover:bg-[#ff8000]/20 hover:border-[#ff8000]/40 transition-all duration-300">
-                    <div class="text-[#ff8000] group-hover:scale-110 transition-transform flex-shrink-0 mt-0.5">
-                        <i data-lucide="backpack" class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"></i>
+            <div class="space-y-2.5 sm:space-y-3">
+
+                <div class="relative">
+                    <label class="text-[7px] sm:text-[9px] uppercase font-black text-[#ff8000] absolute left-3 top-1.5 z-10 tracking-wide">Gear Category</label>
+                    <select class="w-full pt-4 pb-1.5 px-3 bg-slate-50 dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold text-[10px] sm:text-xs outline-none focus:border-[#ff8000] transition-all dark:text-white appearance-none">
+                        <option>🏕️ Camping Kit</option>
+                        <option>🥾 Hiking Gear</option>
+                        <option>🧗 Climbing Bundle</option>
+                        <option>🛶 Water Sports</option>
+                        <option>❄️ Winter Kit</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <label class="text-[7px] sm:text-[9px] uppercase font-black text-[#ff8000] absolute left-3 top-1.5 z-10 tracking-wide">Delivery Destination</label>
+                    <select class="w-full pt-4 pb-1.5 px-3 bg-slate-50 dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold text-[10px] sm:text-xs outline-none focus:border-[#ff8000] transition-all dark:text-white appearance-none">
+                        <option>📍 Yosemite, CA</option>
+                        <option>📍 Rocky Mountain, CO</option>
+                        <option>📍 Zion Canyon, UT</option>
+                        <option>📍 Grand Canyon, AZ</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-slate-50 dark:bg-slate-800/90 p-1.5 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus-within:border-[#ff8000]">
+                        <p class="text-[7px] uppercase font-black text-slate-500 ml-1">Pickup</p>
+                        <input type="date" class="bg-transparent text-[9px] sm:text-xs font-bold w-full outline-none dark:text-white">
                     </div>
-                    <div class="flex-1">
-                        <h3 class="text-sm sm:text-base md:text-lg font-black mb-1 text-white">800+ Gear Items</h3>
-                        <p class="text-[9px] sm:text-xs text-slate-300 dark:text-slate-400 leading-relaxed">Camping, Hiking, Climbing & Water Sports</p>
+                    <div class="bg-slate-50 dark:bg-slate-800/90 p-1.5 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus-within:border-[#ff8000]">
+                        <p class="text-[7px] uppercase font-black text-slate-500 ml-1">Return</p>
+                        <input type="date" class="bg-transparent text-[9px] sm:text-xs font-bold w-full outline-none dark:text-white">
                     </div>
                 </div>
 
-                <div class="flex gap-3 md:gap-4 p-3 md:p-4 lg:p-5 rounded-xl sm:rounded-2xl bg-black/60 dark:bg-slate-900/70 backdrop-blur-md border border-white/20 dark:border-slate-800 group hover:bg-[#ff8000]/20 hover:border-[#ff8000]/40 transition-all duration-300">
-                    <div class="text-[#ff8000] group-hover:scale-110 transition-transform flex-shrink-0 mt-0.5">
-                        <i data-lucide="shield-check" class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="text-sm sm:text-base md:text-lg font-black mb-1 text-white">Safety Checked</h3>
-                        <p class="text-[9px] sm:text-xs text-slate-300 dark:text-slate-400 leading-relaxed">Inspected & sanitized before every rental</p>
-                    </div>
-                </div>
-
-                <div class="flex gap-3 md:gap-4 p-3 md:p-4 lg:p-5 rounded-xl sm:rounded-2xl bg-black/60 dark:bg-slate-900/70 backdrop-blur-md border border-white/20 dark:border-slate-800 group hover:bg-[#ff8000]/20 hover:border-[#ff8000]/40 transition-all duration-300">
-                    <div class="text-[#ff8000] group-hover:scale-110 transition-transform flex-shrink-0 mt-0.5">
-                        <i data-lucide="truck" class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="text-sm sm:text-base md:text-lg font-black mb-1 text-white">Free Delivery</h3>
-                        <p class="text-[9px] sm:text-xs text-slate-300 dark:text-slate-400 leading-relaxed">To your campsite or trailhead</p>
-                    </div>
-                </div>
-
-                <div class="flex gap-3 md:gap-4 p-3 md:p-4 lg:p-5 rounded-xl sm:rounded-2xl bg-black/60 dark:bg-slate-900/70 backdrop-blur-md border border-white/20 dark:border-slate-800 group hover:bg-[#ff8000]/20 hover:border-[#ff8000]/40 transition-all duration-300">
-                    <div class="text-[#ff8000] group-hover:scale-110 transition-transform flex-shrink-0 mt-0.5">
-                        <i data-lucide="headphones" class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="text-sm sm:text-base md:text-lg font-black mb-1 text-white">24/7 Trail Support</h3>
-                        <p class="text-[9px] sm:text-xs text-slate-300 dark:text-slate-400 leading-relaxed">Always reachable wherever you are</p>
-                    </div>
-                </div>
-
+                <button class="w-full bg-[#ff8000] text-white font-black py-2.5 sm:py-3 rounded-xl hover:bg-[#c2410c] transition-all uppercase tracking-widest mt-1 text-[10px] sm:text-xs border-2 border-[#ff8000] active:scale-95 shadow-lg">
+                    Reserve My Gear
+                </button>
             </div>
         </div>
+
+        <div class="w-full lg:flex-1 grid grid-cols-2 gap-2 md:gap-4 mt-4 lg:mt-0">
+            <div class="flex flex-col items-center text-center p-3 rounded-xl bg-black/60 backdrop-blur-md border border-white/10">
+                <i data-lucide="backpack" class="w-6 h-6 text-[#ff8000] mb-1"></i>
+                <h3 class="text-[10px] sm:text-xs font-black text-white">800+ Items</h3>
+            </div>
+            <div class="flex flex-col items-center text-center p-3 rounded-xl bg-black/60 backdrop-blur-md border border-white/10">
+                <i data-lucide="shield-check" class="w-6 h-6 text-[#ff8000] mb-1"></i>
+                <h3 class="text-[10px] sm:text-xs font-black text-white">Safe Gear</h3>
+            </div>
+            <div class="flex flex-col items-center text-center p-3 rounded-xl bg-black/60 backdrop-blur-md border border-white/10">
+                <i data-lucide="truck" class="w-6 h-6 text-[#ff8000] mb-1"></i>
+                <h3 class="text-[10px] sm:text-xs font-black text-white">Free Delivery</h3>
+            </div>
+            <div class="flex flex-col items-center text-center p-3 rounded-xl bg-black/60 backdrop-blur-md border border-white/10">
+                <i data-lucide="headphones" class="w-6 h-6 text-[#ff8000] mb-1"></i>
+                <h3 class="text-[10px] sm:text-xs font-black text-white">24/7 Support</h3>
+            </div>
+        </div>
+
     </div>
+</div>
 </section>
 
 
