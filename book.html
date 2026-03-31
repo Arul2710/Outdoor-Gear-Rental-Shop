@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
@@ -270,93 +271,80 @@
 </script>
 
 
-<!-- ===== HERO GEAR SECTION ===== -->
-<section class="hero-gear-section relative w-full py-8 sm:py-12 md:py-16 lg:py-20 px-4 overflow-hidden bg-[#0f172a] dark:bg-black">
-
-    <!-- Background Image -->
+<section class="relative w-full min-h-screen flex items-center justify-center py-12 px-4 overflow-hidden bg-[#0f172a]">
+    
     <div class="absolute inset-0 z-0">
-        <img src="img/home1-1.jpg"
-             class="w-full h-full object-cover opacity-40"
-             alt="Outdoor Adventure Background">
-        <div class="absolute inset-0 bg-gradient-to-b from-[#0f172a]/90 via-[#0f172a]/70 to-[#ff8000]/20 lg:bg-gradient-to-r lg:from-[#0f172a]/95 lg:via-[#0f172a]/60 lg:to-[#ff8000]/20"></div>
+        <img src="img/home1-1.jpg" class="w-full h-full object-cover opacity-30" alt="Background">
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/50 to-[#0f172a]/80"></div>
     </div>
 
-    <div class="container mx-auto relative z-10 max-w-7xl px-4">
-    <div class="flex flex-col lg:flex-row items-center justify-center gap-4 md:gap-8">
-
-        <div class="w-full max-w-[340px] sm:max-w-[400px] md:max-w-[450px] lg:max-w-[400px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20 dark:border-slate-800 mx-auto">
-
-            <div class="flex border-b border-slate-200 dark:border-slate-800 mb-4 gap-1" id="tab-container">
-                <button onclick="switchTab(this)" class="flex-1 pb-2 font-black text-[9px] sm:text-xs transition-all text-[#ff8000] border-b-2 border-[#ff8000] whitespace-nowrap">Daily</button>
-                <button onclick="switchTab(this)" class="flex-1 pb-2 font-black text-[9px] sm:text-xs transition-all text-gray-400 dark:text-gray-500 hover:text-[#ff8000] border-b-2 border-transparent whitespace-nowrap">Weekly</button>
-                <button onclick="switchTab(this)" class="flex-1 pb-2 font-black text-[9px] sm:text-xs transition-all text-gray-400 dark:text-gray-500 hover:text-[#ff8000] border-b-2 border-transparent whitespace-nowrap">Group</button>
-            </div>
-
-            <h1 class="text-lg md:text-xl lg:text-2xl font-black mb-3 leading-tight text-slate-800 dark:text-white text-center">
-                Rent Your <span class="text-[#ff8000]">Outdoor Gear</span>
+    <div class="container mx-auto relative z-10 max-w-7xl">
+        
+        <div class="text-center mb-8 md:mb-12 pt-24 md:pt-0">
+            <h1 class="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter leading-tight">
+                Gear Up. <br class="md:hidden"> <span class="text-[#ff8000]">Explore More.</span>
             </h1>
+            <p class="text-white/70 text-sm md:text-lg max-w-2xl mx-auto font-medium px-4">
+                Premium outdoor equipment rentals delivered directly to your destination.
+            </p>
+        </div>
 
-            <div class="space-y-2.5 sm:space-y-3">
-
-                <div class="relative">
-                    <label class="text-[7px] sm:text-[9px] uppercase font-black text-[#ff8000] absolute left-3 top-1.5 z-10 tracking-wide">Gear Category</label>
-                    <select class="w-full pt-4 pb-1.5 px-3 bg-slate-50 dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold text-[10px] sm:text-xs outline-none focus:border-[#ff8000] transition-all dark:text-white appearance-none">
+        <div class="w-full max-w-6xl mx-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-3xl md:rounded-full shadow-2xl p-3 md:p-3 border border-white/20">
+            <div class="flex flex-col md:flex-row items-center gap-2">
+                
+                <div class="w-full md:w-1/4 relative group px-5 py-3 md:py-2 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-700">
+                    <label class="text-[10px] uppercase font-black text-[#ff8000] block mb-1">Category</label>
+                    <select class="w-full bg-transparent font-bold text-sm outline-none dark:text-white appearance-none cursor-pointer">
                         <option>🏕️ Camping Kit</option>
                         <option>🥾 Hiking Gear</option>
                         <option>🧗 Climbing Bundle</option>
-                        <option>🛶 Water Sports</option>
-                        <option>❄️ Winter Kit</option>
                     </select>
                 </div>
 
-                <div class="relative">
-                    <label class="text-[7px] sm:text-[9px] uppercase font-black text-[#ff8000] absolute left-3 top-1.5 z-10 tracking-wide">Delivery Destination</label>
-                    <select class="w-full pt-4 pb-1.5 px-3 bg-slate-50 dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold text-[10px] sm:text-xs outline-none focus:border-[#ff8000] transition-all dark:text-white appearance-none">
+                <div class="w-full md:w-1/4 relative group px-5 py-3 md:py-2 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-700">
+                    <label class="text-[10px] uppercase font-black text-[#ff8000] block mb-1">Destination</label>
+                    <select class="w-full bg-transparent font-bold text-sm outline-none dark:text-white appearance-none cursor-pointer">
                         <option>📍 Yosemite, CA</option>
-                        <option>📍 Rocky Mountain, CO</option>
                         <option>📍 Zion Canyon, UT</option>
                         <option>📍 Grand Canyon, AZ</option>
                     </select>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2">
-                    <div class="bg-slate-50 dark:bg-slate-800/90 p-1.5 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus-within:border-[#ff8000]">
-                        <p class="text-[7px] uppercase font-black text-slate-500 ml-1">Pickup</p>
-                        <input type="date" class="bg-transparent text-[9px] sm:text-xs font-bold w-full outline-none dark:text-white">
+                <div class="w-full md:w-1/3 flex items-center px-5 py-4 md:py-2 gap-4">
+                    <div class="flex-1">
+                        <label class="text-[10px] uppercase font-black text-[#ff8000] block mb-1">Pickup</label>
+                        <input type="date" class="w-full bg-transparent text-sm font-bold outline-none dark:text-white appearance-none">
                     </div>
-                    <div class="bg-slate-50 dark:bg-slate-800/90 p-1.5 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus-within:border-[#ff8000]">
-                        <p class="text-[7px] uppercase font-black text-slate-500 ml-1">Return</p>
-                        <input type="date" class="bg-transparent text-[9px] sm:text-xs font-bold w-full outline-none dark:text-white">
+                    <div class="flex-1">
+                        <label class="text-[10px] uppercase font-black text-[#ff8000] block mb-1">Return</label>
+                        <input type="date" class="w-full bg-transparent text-sm font-bold outline-none dark:text-white appearance-none">
                     </div>
                 </div>
 
-                <button class="w-full bg-[#ff8000] text-white font-black py-2.5 sm:py-3 rounded-xl hover:bg-[#c2410c] transition-all uppercase tracking-widest mt-1 text-[10px] sm:text-xs border-2 border-[#ff8000] active:scale-95 shadow-lg">
-                    Reserve My Gear
-                </button>
+                <div class="w-full md:w-auto md:ml-auto">
+                    <button class="w-full md:w-auto bg-[#ff8000] text-white font-black px-10 py-5 md:py-4 rounded-2xl md:rounded-full hover:bg-[#e67300] transition-all uppercase text-sm tracking-widest flex items-center justify-center gap-2 shadow-lg active:scale-95">
+                        <span>Reserve Now</span>
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="w-full lg:flex-1 grid grid-cols-2 gap-2 md:gap-4 mt-4 lg:mt-0">
-            <div class="flex flex-col items-center text-center p-3 rounded-xl bg-black/60 backdrop-blur-md border border-white/10">
-                <i data-lucide="backpack" class="w-6 h-6 text-[#ff8000] mb-1"></i>
-                <h3 class="text-[10px] sm:text-xs font-black text-white">800+ Items</h3>
+        <div class="flex flex-wrap justify-center gap-4 md:gap-12 mt-10 md:mt-16">
+            <div class="flex items-center gap-2 text-white/80 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                <i data-lucide="shield-check" class="w-4 h-4 text-[#ff8000]"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Insured Gear</span>
             </div>
-            <div class="flex flex-col items-center text-center p-3 rounded-xl bg-black/60 backdrop-blur-md border border-white/10">
-                <i data-lucide="shield-check" class="w-6 h-6 text-[#ff8000] mb-1"></i>
-                <h3 class="text-[10px] sm:text-xs font-black text-white">Safe Gear</h3>
+            <div class="flex items-center gap-2 text-white/80 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                <i data-lucide="truck" class="w-4 h-4 text-[#ff8000]"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Free Delivery</span>
             </div>
-            <div class="flex flex-col items-center text-center p-3 rounded-xl bg-black/60 backdrop-blur-md border border-white/10">
-                <i data-lucide="truck" class="w-6 h-6 text-[#ff8000] mb-1"></i>
-                <h3 class="text-[10px] sm:text-xs font-black text-white">Free Delivery</h3>
-            </div>
-            <div class="flex flex-col items-center text-center p-3 rounded-xl bg-black/60 backdrop-blur-md border border-white/10">
-                <i data-lucide="headphones" class="w-6 h-6 text-[#ff8000] mb-1"></i>
-                <h3 class="text-[10px] sm:text-xs font-black text-white">24/7 Support</h3>
+            <div class="flex items-center gap-2 text-white/80 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                <i data-lucide="rotate-ccw" class="w-4 h-4 text-[#ff8000]"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Easy Returns</span>
             </div>
         </div>
-
     </div>
-</div>
 </section>
 
 
@@ -627,20 +615,27 @@
 <footer class="bg-[#0f172a] dark:bg-slate-900 text-white pt-16 pb-8 font-sans overflow-hidden">
     <div class="container mx-auto px-4 md:px-8 max-w-[1300px]">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-
+            <!-- Logo & Social Section -->
             <div class="space-y-6">
                 <span class="text-2xl md:text-3xl font-black tracking-tighter flex items-center gap-2 text-[#fb923c]">
-                    <i data-lucide="tent" class="w-7 h-7 md:w-8 md:h-8"></i>
+                    <i class="fas fa-campground text-2xl md:text-3xl"></i>
                     Trail<span class="text-white">Gear</span>
                 </span>
                 <p class="text-white/70 text-sm leading-relaxed">Premium outdoor gear rental across major national parks and adventure destinations. We equip adventurers for extraordinary experiences.</p>
                 <div class="flex gap-4">
-                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ff8000] transition-all"><i data-lucide="facebook" class="w-5 h-5"></i></a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ff8000] transition-all"><i data-lucide="instagram" class="w-5 h-5"></i></a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ff8000] transition-all"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ff8000] transition-all">
+                        <i class="fab fa-facebook-f text-white text-lg"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ff8000] transition-all">
+                        <i class="fab fa-instagram text-white text-lg"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ff8000] transition-all">
+                        <i class="fab fa-twitter text-white text-lg"></i>
+                    </a>
                 </div>
             </div>
-
+            
+            <!-- Company Links -->
             <div class="space-y-6">
                 <h4 class="text-lg font-black uppercase tracking-widest text-white">Company</h4>
                 <ul class="space-y-3 text-white/70 text-sm">
@@ -648,11 +643,12 @@
                     <li><a href="about.html" class="hover:text-[#fb923c] transition-colors">About</a></li>
                     <li><a href="book.html" class="hover:text-[#fb923c] transition-colors">Rent Gear</a></li>
                     <li><a href="services.html" class="hover:text-[#fb923c] transition-colors">Services</a></li>
-                    <li><a href="gallery.html" class="hover:text-[#fb923c] transition-colors">Gear &amp; Guides</a></li>
+                    <li><a href="gallery.html" class="hover:text-[#fb923c] transition-colors">Gear & Guides</a></li>
                     <li><a href="contact.html" class="hover:text-[#fb923c] transition-colors">Contact</a></li>
                 </ul>
             </div>
-
+            
+            <!-- Destinations -->
             <div class="space-y-6">
                 <h4 class="text-lg font-black uppercase tracking-widest text-white">Destinations</h4>
                 <ul class="space-y-3 text-white/70 text-sm">
@@ -663,26 +659,28 @@
                     <li><a href="#" class="hover:text-[#fb923c] transition-colors">Olympic Peninsula, WA</a></li>
                 </ul>
             </div>
-
+            
+            <!-- Contact Info -->
             <div class="space-y-6">
                 <h4 class="text-lg font-black uppercase tracking-widest text-white">Get in Touch</h4>
                 <ul class="space-y-4 text-sm">
                     <li class="flex items-start gap-3">
-                        <i data-lucide="map-pin" class="w-5 h-5 text-[#fb923c] flex-shrink-0"></i>
+                        <i class="fas fa-map-marker-alt text-[#fb923c] text-lg flex-shrink-0 mt-0.5"></i>
                         <span class="text-white/70">456 Trail Blvd,<br>Denver, CO 80202</span>
                     </li>
                     <li class="flex items-center gap-3">
-                        <i data-lucide="phone" class="w-5 h-5 text-[#fb923c] flex-shrink-0"></i>
+                        <i class="fas fa-phone-alt text-[#fb923c] text-lg flex-shrink-0"></i>
                         <span class="text-white/70">+1 (800) 874-2559</span>
                     </li>
                     <li class="flex items-center gap-3">
-                        <i data-lucide="mail" class="w-5 h-5 text-[#fb923c] flex-shrink-0"></i>
+                        <i class="fas fa-envelope text-[#fb923c] text-lg flex-shrink-0"></i>
                         <span class="text-white/70">hello@trailgear.com</span>
                     </li>
                 </ul>
             </div>
         </div>
-
+        
+        <!-- Copyright Section -->
         <div class="pt-8 border-t border-white/20 flex flex-col md:flex-row justify-between items-center gap-4 text-[12px] font-bold text-white/60">
             <p>© 2026 TrailGear Outdoor Rentals. All Rights Reserved.</p>
             <div class="flex gap-6 uppercase tracking-widest">
@@ -692,11 +690,5 @@
         </div>
     </div>
 </footer>
-
-<script>
-    if (typeof lucide !== 'undefined') { lucide.createIcons(); }
-    document.addEventListener('DOMContentLoaded', function() { lucide.createIcons(); });
-</script>
-
 </body>
 </html>
